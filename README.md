@@ -202,3 +202,9 @@ A **Future Diary app** that allows users to:
 - Any external libraries or assets used will be listed here.  
 
 ---
+
+[wireFrame](https://excalidraw.com/#json=eVwD55XHqNuyxwoT7YneB,JFn3m1v8vgdO_t69H1gQgQ)
+
+[trello](https://trello.com/invite/b/68c2b808f32436b85099c94e/ATTI33b6548ef1fd1e644dab4ab32d0af29f8C05B60E/dearme)
+
+[ERD](https://drive.google.com/file/d/1Hx5I5N8FdV6dChbVy_Uwsc6oURAQ7Z3K/view?usp=sharing)
