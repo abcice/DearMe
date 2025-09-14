@@ -30,3 +30,6 @@ def signup(request):
     form = UserCreationForm()
     context = {'form': form, 'error_message': error_message}
     return render(request, 'signup.html', context)
+
+def profile(request):
+    return render(request, 'profile.html')
