@@ -2,6 +2,14 @@
 
 ## 📖 Future Diary / Time Capsule App  
 
+## ✨ Description  
+
+**DearMe** is a digital time capsule and future diary app that lets you write letters, store memories, and send messages to your future self or loved ones.  
+Whether it’s a personal reflection, a milestone, or a heartfelt note, you decide when it will unlock — days, years, or even decades later.  
+
+With encrypted diaries, multimedia attachments, legacy handovers, and surprise flashbacks, DearMe helps you preserve your journey, relive special moments, and leave a lasting legacy for those who matter most.  
+
+
 ## 🎯 Core Concept  
 A **Future Diary app** that allows users to:  
 - Store letters, daily diary entries, media, and personal favorites for themselves or loved ones.  
