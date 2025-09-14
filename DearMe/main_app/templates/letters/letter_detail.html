@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ letter.subject }}</h1>
+
+  <p><strong>Status:</strong> {{ letter.get_status_display }}</p>
+  <p><strong>Created:</strong> {{ letter.created_at|date:"Y-m-d H:i" }}</p>
+  <p><strong>Delivery Date:</strong> {{ letter.delivery_date|date:"Y-m-d H:i" }}</p>
+  
+  <h3>Message</h3>
+  <p>{{ letter.body|linebreaks }}</p>
+
+  {% if letter.attachment %}
+    <p><strong>Attachment:</strong> <a href="{{ letter.attachment.url }}">Download</a></p>
+  {% endif %}
+
+  <h3>Receivers</h3>
+  <ul>
+    {% for receiver in letter.receivers.all %}
+      <li>{{ receiver.full_name|default:receiver.username }}</li>
+    {% empty %}
+      <li>No in-app receivers</li>
+    {% endfor %}
+  </ul>
+
+  {% if letter.external_emails %}
+    <p><strong>External emails:</strong> {{ letter.external_emails }}</p>
+  {% endif %}
+
+  {% if letter.is_editable %}
+    <a href="{% url 'letter_edit' letter.pk %}">Edit</a>
+  {% endif %}
+  <a href="{% url 'letter_list' %}">Back to list</a>
+{% endblock %}

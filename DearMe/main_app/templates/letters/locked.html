@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>Letter Locked</h1>
+  <p>This letter can no longer be edited because the grace period has expired or it has already been delivered.</p>
+
+  <a href="{% url 'letter_detail' letter.pk %}">View Letter</a>
+{% endblock %}

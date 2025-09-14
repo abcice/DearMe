@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>My Letters</h1>
+
+  <a href="{% url 'letter_create' %}">+ New Letter</a>
+
+  {% if letters %}
+    <ul>
+      {% for letter in letters %}
+        <li>
+          <a href="{% url 'letter_detail' letter.pk %}">
+            {{ letter.subject }}
+          </a> 
+          - Status: {{ letter.get_status_display }}  
+          - Scheduled for: {{ letter.delivery_date|date:"Y-m-d H:i" }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You haven’t written any letters yet.</p>
+  {% endif %}
+{% endblock %}

@@ -2,6 +2,10 @@ from django.db import models
 from django.urls import reverse
 from datetime import date
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
+
 
 # Create your models here.
 class CustomUser(AbstractUser):
@@ -11,3 +15,78 @@ class CustomUser(AbstractUser):
 
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip()
+    
+
+class Letter(models.Model):
+    STATUS_CHOICES = [
+        ("draft", "Draft"),
+        ("scheduled", "Scheduled"),
+        ("locked", "Locked"),
+        ("delivered", "Delivered"),
+    ]
+
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="sent_letters"
+    )
+
+    receivers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="received_letters",
+        blank=True
+    )
+
+    external_emails = models.TextField(
+        blank=True,
+        help_text="Comma-separated emails for people outside the app"
+    )
+
+    subject = models.CharField(max_length=255)
+    body = models.TextField()
+
+    attachment = models.FileField(
+        upload_to="letter_attachments/",
+        null=True,
+        blank=True
+    )
+
+    delivery_date = models.DateTimeField()
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="draft"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    locked_at = models.DateTimeField(null=True, blank=True)
+
+    grace_period_hours = models.IntegerField(default=48)
+
+    def is_editable(self):
+        if self.status == "draft":
+            return True
+        if self.status == "scheduled":
+            if not self.locked_at:
+                return True
+            return timezone.now() < self.locked_at + timedelta(hours=self.grace_period_hours)
+        return False
+
+    def lock(self):
+        self.status = "locked"
+        self.locked_at = timezone.now()
+        self.save()
+
+    def is_due(self):
+        return timezone.now() >= self.delivery_date
+
+    def get_external_emails(self):
+        return [email.strip() for email in self.external_emails.split(",") if email.strip()]
+
+    def get_absolute_url(self):
+        return reverse("letter_detail", kwargs={"pk": self.pk})
+
+    def __str__(self):
+        return f"{self.subject} ({self.get_status_display()})"
