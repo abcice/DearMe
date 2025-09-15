@@ -6,6 +6,10 @@ from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 from django.core.mail import EmailMessage
+import brevo_python
+from brevo_python.rest import ApiException
+import os
+from django.conf import settings
 
 
 # Create your models here.
@@ -92,23 +96,44 @@ class Letter(models.Model):
     def __str__(self):
         return f"{self.subject} ({self.get_status_display()})"
     
-    def send_email(self):
-        recipients = [r.email for r in self.receivers.all() if r.email] + self.get_external_emails()
+    def send_email_brevo(self):
+        recipients = [{"email": r.email} for r in self.receivers.all() if r.email]
+        recipients += [{"email": e} for e in self.get_external_emails()]
 
         if not recipients:
-            return False  
+            return False
 
-        email = EmailMessage(
-            subject=self.subject,
-            body=self.body,
-            from_email=settings.DEFAULT_FROM_EMAIL,
+        configuration = brevo_python.Configuration()
+        configuration.api_key['api-key'] = os.getenv('BREVO_API_KEY', settings.BREVO_API_KEY)
+
+        api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(configuration))
+
+        send_smtp_email = brevo_python.SendSmtpEmail(
             to=recipients,
+            sender={
+                        "name": "DearMe App",
+                        "email": os.getenv("BREVO_SENDER_EMAIL", settings.BREVO_SENDER_EMAIL)
+                    },
+            subject=self.subject,
+            html_content=self.body
         )
 
         if self.attachment:
-            email.attach_file(self.attachment.path)
+            with open(self.attachment.path, "rb") as f:
+                import base64
+                send_smtp_email.attachment = [
+                    {
+                        "content": base64.b64encode(f.read()).decode(),
+                        "name": self.attachment.name.split("/")[-1]
+                    }
+                ]
 
-        email.send()
-        self.status = "delivered"
-        self.save()
-        return True
+        try:
+            response = api_instance.send_transac_email(send_smtp_email)
+            print(response)
+            self.status = "delivered"
+            self.save()
+            return True
+        except ApiException as e:
+            print(f"Brevo error: {e}")
+            return False

@@ -11,6 +11,9 @@ from django.utils import timezone
 from .models import Letter
 from .forms import LetterForm
 from django.contrib import messages
+import brevo_python
+from brevo_python.rest import ApiException
+import os
 
 
 
@@ -83,9 +86,9 @@ def letter_edit(request, pk):
 def send_letter(request, pk):
     letter = get_object_or_404(Letter, pk=pk, sender=request.user)
 
-    if letter.send_email():
-        messages.success(request, "Letter sent successfully!")
+    if letter.send_email_brevo():
+        messages.success(request, "Letter sent successfully via Brevo!")
     else:
-        messages.error(request, "No recipients found for this letter.")
+        messages.error(request, "No recipients found or failed to send email.")
 
     return redirect("letter_detail", pk=letter.pk)
