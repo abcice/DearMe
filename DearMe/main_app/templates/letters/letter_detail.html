@@ -31,3 +31,6 @@
   {% endif %}
   <a href="{% url 'letter_list' %}">Back to list</a>
 {% endblock %}
+<a href="{% url 'letter_send' letter.pk %}" class="btn btn-primary">
+  Send as Email
+</a>

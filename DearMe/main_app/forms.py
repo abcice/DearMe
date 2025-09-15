@@ -13,3 +13,11 @@ class LetterForm(forms.ModelForm):
             "external_emails",
             "grace_period_hours",
         ]
+        widgets = {
+            "delivery_date": forms.DateTimeInput(
+                attrs={
+                    "type": "datetime-local",  
+                    "class": "form-control",
+                }
+            ),
+        }

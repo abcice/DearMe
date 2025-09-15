@@ -10,6 +10,8 @@ from django.http import HttpResponse
 from django.utils import timezone
 from .models import Letter
 from .forms import LetterForm
+from django.contrib import messages
+
 
 
 class Home(LoginView):
@@ -76,3 +78,14 @@ def letter_edit(request, pk):
     else:
         form = LetterForm(instance=letter)
     return render(request, "letters/letter_form.html", {"form": form})
+
+@login_required
+def send_letter(request, pk):
+    letter = get_object_or_404(Letter, pk=pk, sender=request.user)
+
+    if letter.send_email():
+        messages.success(request, "Letter sent successfully!")
+    else:
+        messages.error(request, "No recipients found for this letter.")
+
+    return redirect("letter_detail", pk=letter.pk)

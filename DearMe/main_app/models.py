@@ -5,6 +5,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
+from django.core.mail import EmailMessage
 
 
 # Create your models here.
@@ -90,3 +91,24 @@ class Letter(models.Model):
 
     def __str__(self):
         return f"{self.subject} ({self.get_status_display()})"
+    
+    def send_email(self):
+        recipients = [r.email for r in self.receivers.all() if r.email] + self.get_external_emails()
+
+        if not recipients:
+            return False  
+
+        email = EmailMessage(
+            subject=self.subject,
+            body=self.body,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=recipients,
+        )
+
+        if self.attachment:
+            email.attach_file(self.attachment.path)
+
+        email.send()
+        self.status = "delivered"
+        self.save()
+        return True

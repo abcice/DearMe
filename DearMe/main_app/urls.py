@@ -10,5 +10,7 @@ urlpatterns = [
     path("letters/<int:pk>/", views.letter_detail, name="letter_detail"),
     path("letters/new/", views.letter_create, name="letter_create"),
     path("letters/<int:pk>/edit/", views.letter_edit, name="letter_edit"),
+    path("letters/<int:pk>/send/", views.send_letter, name="letter_send"),
+
     
 ]

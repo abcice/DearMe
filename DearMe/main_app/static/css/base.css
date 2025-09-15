@@ -1,5 +1,134 @@
-.header-logo-container img {
-  width: 20%;       
-  max-width: 200px; 
-  height: auto;
+/* Import Google Fonts (Merriweather + Open Sans) */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
+
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #f9f5ec;
+  color: #1e1e1e;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background: #2c3e50;
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header img {
+  height: 40px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+}
+
+nav a, nav button {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+nav a:hover, nav button:hover {
+  color: #7b3e2d;
+}
+
+/* Main Layout */
+main {
+  flex: 1;
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* Headings */
+h1, h2, h3 {
+  font-family: 'Merriweather', serif;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+/* Forms */
+form {
+  display: grid;
+  gap: 1rem;
+}
+
+input, textarea, select {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+}
+
+button, .btn {
+  background: #7b3e2d;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover, .btn:hover {
+  background: #3d6b66;
+}
+
+/* Lists (letters, profiles, etc.) */
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  background: #f0ebe2;
+  border-radius: 8px;
+}
+
+li a {
+  color: #2c3e50;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+li a:hover {
+  text-decoration: underline;
+  color: #7b3e2d;
+}
+
+/* Accessibility */
+a:focus, button:focus, input:focus {
+  outline: 3px solid #3d6b66;
+  outline-offset: 2px;
+}
+
+/* Utility */
+.red-text {
+  color: #b22222;
+  font-weight: 600;
 }
