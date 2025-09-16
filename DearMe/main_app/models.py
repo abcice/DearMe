@@ -8,20 +8,35 @@ from datetime import timedelta
 from django.core.mail import EmailMessage
 import brevo_python
 from brevo_python.rest import ApiException
+import uuid
 import os
 from django.conf import settings
 
 
 # Create your models here.
+def profile_pic_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f"{uuid.uuid4()}.{ext}"
+    return os.path.join('profile_pics', filename)
+
 class CustomUser(AbstractUser):
     birthday = models.DateField(null=True, blank=True)
     email = models.EmailField(unique=True)
-    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    profile_picture = models.ImageField(
+        upload_to=profile_pic_path,
+        null=True,
+        blank=True
+    )
     timezone = models.CharField(max_length=50, default='UTC')
     is_email_verified = models.BooleanField(default=False)
+    
+    hide_name = models.BooleanField(default=False)  # NEW
 
     def full_name(self):
+        if self.hide_name:
+            return ""  # Return empty if the user wants to hide their name
         return f"{self.first_name} {self.last_name}".strip()
+
     
 
 class Letter(models.Model):

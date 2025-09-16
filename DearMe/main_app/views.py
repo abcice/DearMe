@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.utils import timezone
 from .models import Letter, CustomUser
-from .forms import LetterForm, CustomUserCreationForm, EmailOrUsernameAuthenticationForm
+from .forms import LetterForm, CustomUserCreationForm, EmailOrUsernameAuthenticationForm, ProfileForm
 from django.contrib import messages
 import brevo_python
 from brevo_python.rest import ApiException
@@ -22,7 +22,9 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
-from datetime import timedelta
+from datetime import timedelta, date
+from django.contrib.auth import logout
+
 
 
 
@@ -101,8 +103,7 @@ def verify_email(request, token):
     else:
         return HttpResponse("Invalid or expired verification link.")
 
-def profile(request):
-    return render(request, 'profile.html')
+
 
 @login_required
 def dashboard(request):
@@ -224,3 +225,47 @@ def forgot_password(request):
             messages.error(request, "No user exists with this email or it is typed incorrectly.")
 
     return render(request, 'forgot_password.html', {'message_sent': message_sent})
+
+
+@login_required
+def profile(request):
+    user = request.user
+    age = None
+    if user.birthday:
+        today = date.today()
+        age = today.year - user.birthday.year - ((today.month, today.day) < (user.birthday.month, user.birthday.day))
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully!")
+            return redirect("profile_view")
+    else:
+        form = ProfileForm(instance=user)
+
+    context = {
+        "form": form,
+        "user_obj": user,
+        "age": age,
+    }
+    return render(request, "profile_edit.html", context)
+
+@login_required
+def profile_view(request):
+    user = request.user
+    age = None
+    if user.birthday:
+        today = date.today()
+        age = today.year - user.birthday.year - ((today.month, today.day) < (user.birthday.month, user.birthday.day))
+    return render(request, "profile_view.html", {"age": age})
+
+@login_required
+def delete_profile(request):
+    if request.method == "POST":
+        user = request.user
+        logout(request)  # log the user out first
+        user.delete()
+        messages.success(request, "Your account has been deleted successfully.")
+        return redirect("home")
+    return redirect("edit_profile")

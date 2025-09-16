@@ -72,3 +72,25 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
                 )
 
         return self.cleaned_data
+
+
+class ProfileForm(forms.ModelForm):
+    birthday = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"})
+    )
+    profile_picture = forms.ImageField(required=False)
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    hide_name = forms.BooleanField(required=False, label="Hide my name")
+
+    class Meta:
+        model = CustomUser
+        fields = ["username", "email", "first_name", "last_name", "hide_name", "birthday", "profile_picture"]
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        user = self.instance
+        if CustomUser.objects.filter(email__iexact=email).exclude(pk=user.pk).exists():
+            raise forms.ValidationError("This email is already in use.")
+        return email

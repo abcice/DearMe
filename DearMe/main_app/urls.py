@@ -15,7 +15,9 @@ urlpatterns = [
             success_url='/'
         ),
         name='reset_password'),
-    path('profile/', views.profile, name='profile'),
+    path('profile/', views.profile_view, name='profile_view'),
+    path('profile/edit/', views.profile, name='edit_profile'),
+    path('profile/delete/', views.delete_profile, name='delete_profile'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path("letters/", views.letter_list, name="letter_list"),
     path("letters/<int:pk>/", views.letter_detail, name="letter_detail"),

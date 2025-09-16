@@ -36,6 +36,8 @@ ALLOWED_HOSTS = ["*"]
 
 INSTALLED_APPS = [
     'main_app',
+    'crispy_forms',
+    "crispy_bootstrap5",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -146,3 +148,8 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 BREVO_API_KEY = config("BREVO_API_KEY")
 BREVO_SENDER_EMAIL = config("BREVO_SENDER_EMAIL")
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

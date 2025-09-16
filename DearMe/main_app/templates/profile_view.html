@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<h1>My Profile</h1>
+
+<div class="profile-container">
+    <div class="profile-picture">
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-pic"/>
+        {% else %}
+            <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="profile-pic"/>
+        {% endif %}
+    </div>
+
+    <div class="profile-details">
+        {% if user.full_name %}
+            <p><strong>Name:</strong> {{ user.full_name }}</p>
+        {% endif %}
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Birthday:</strong> {{ user.birthday }}</p>
+        {% if age %}
+            <p><strong>Age:</strong> {{ age }}</p>
+        {% endif %}
+        <p><strong>Date Joined:</strong> {{ user.date_joined|date:"Y-m-d" }}</p>
+
+        <!-- Move the Edit button below the details -->
+        <div style="margin-top: 20px;">
+            <a href="{% url 'edit_profile' %}" class="btn edit-btn">Edit Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
