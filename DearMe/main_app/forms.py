@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth import authenticate
 from .models import Letter, CustomUser
 
 class LetterForm(forms.ModelForm):
@@ -33,3 +34,29 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = CustomUser
         fields = ("username", "email", "birthday", "password1", "password2")
+
+class EmailOrUsernameAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(label="Username or Email")
+
+    def clean(self):
+        username_or_email = self.cleaned_data.get("username")
+        password = self.cleaned_data.get("password")
+
+        if username_or_email and password:
+            # Check if user entered an email
+            if "@" in username_or_email:
+                try:
+                    user_obj = CustomUser.objects.get(email__iexact=username_or_email)
+                    username = user_obj.username
+                except CustomUser.DoesNotExist:
+                    raise forms.ValidationError("Invalid email or password.")
+            else:
+                username = username_or_email
+
+            self.user_cache = authenticate(
+                self.request, username=username, password=password
+            )
+            if self.user_cache is None:
+                raise forms.ValidationError("Invalid login credentials.")
+
+        return self.cleaned_data

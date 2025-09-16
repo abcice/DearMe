@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.utils import timezone
 from .models import Letter
-from .forms import LetterForm, CustomUserCreationForm
+from .forms import LetterForm, CustomUserCreationForm, EmailOrUsernameAuthenticationForm
 from django.contrib import messages
 import brevo_python
 from brevo_python.rest import ApiException
@@ -23,11 +23,16 @@ from .utils import generate_email_token
 
 class Home(LoginView):
     template_name = 'home.html'
+    authentication_form = EmailOrUsernameAuthenticationForm
 
-    def form_valid(self, form:AuthenticationForm):
+    def form_valid(self, form):
         user = form.get_user()
         if not user.is_email_verified:
-            messages.error(self.request, "Please verify your email before logging in.")
+            messages.error(
+                self.request, 
+                "Your email is not verified. Please check your inbox (and junk/spam folder) "
+                "for the verification link we sent. If you didn’t receive it, sign up again or contact support."
+                            )
             return redirect('home')
         return super().form_valid(form)
     
@@ -68,7 +73,9 @@ def signup(request):
 
             try:
                 api_instance.send_transac_email(send_smtp_email)
-                messages.success(request, "Check your email to verify your account before logging in.")
+                messages.success(request, "We've sent you an email with a verification link. "
+                "Please check your inbox and junk/spam folder. "
+                "Add our email to your safe senders list so you don’t miss future emails.")
             except ApiException as e:
                 messages.error(request, f"Could not send verification email. Try again later.")
                 print(f"Brevo error: {e}")
