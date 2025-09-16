@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 from decouple import config
+from celery.schedules import crontab
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -34,7 +36,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'main_app',
-    'background_task',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -108,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Bahrain'
 
 USE_I18N = True
 
@@ -133,7 +134,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Custom user model
 AUTH_USER_MODEL = 'main_app.CustomUser'  
 
-# settings.py
+# email settings
 
 
 EMAIL_PORT = 587
@@ -144,3 +145,19 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 BREVO_API_KEY = config("BREVO_API_KEY")
 BREVO_SENDER_EMAIL = config("BREVO_SENDER_EMAIL")
+
+    # Celery
+CELERY_BROKER_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost:5672//")
+CELERY_RESULT_BACKEND = os.getenv("RABBITMQ_URL", "rpc://")
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Bahrain'
+CELERY_ENABLE_UTC = True
+
+CELERY_BEAT_SCHEDULE = {
+    # Run every minute to check for due letters
+    'send-due-letters-every-minute': {
+        'task': 'main_app.tasks.send_due_letters',
+    },
+}

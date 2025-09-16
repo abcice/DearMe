@@ -22,7 +22,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
-
+from datetime import timedelta
+from .tasks import send_letter_task
 
 
 
@@ -134,13 +135,18 @@ def letter_create(request):
         if form.is_valid():
             letter = form.save(commit=False)
             letter.sender = request.user
-            letter.status = "draft"
+            letter.status = "scheduled"
             letter.save()
-            form.save_m2m()  # save receivers
+            form.save_m2m()  
+            
+            send_letter_task.apply_async(args=[letter.pk], eta=letter.delivery_date)
+
+            messages.success(request, "Letter scheduled successfully!")
             return redirect("letter_list")
     else:
         form = LetterForm()
     return render(request, "letters/letter_form.html", {"form": form})
+
 
 @login_required
 def letter_edit(request, pk):
@@ -152,11 +158,19 @@ def letter_edit(request, pk):
     if request.method == "POST":
         form = LetterForm(request.POST, request.FILES, instance=letter)
         if form.is_valid():
-            form.save()
+            letter = form.save(commit=False)
+            letter.status = "scheduled"
+            letter.save()
+            form.save_m2m()
+
+            send_letter_task.apply_async(args=[letter.pk], eta=letter.delivery_date)
+
+            messages.success(request, "Letter updated and rescheduled!")
             return redirect("letter_detail", pk=letter.pk)
     else:
         form = LetterForm(instance=letter)
     return render(request, "letters/letter_form.html", {"form": form})
+
 
 @login_required
 def send_letter(request, pk):
