@@ -14,6 +14,8 @@ from pathlib import Path
 from decouple import config
 from celery.schedules import crontab
 import os
+import base64
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -153,3 +155,5 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+FIELD_ENCRYPTION_KEY = config("FIELD_ENCRYPTION_KEY")
