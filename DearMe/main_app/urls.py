@@ -16,6 +16,7 @@ urlpatterns = [
         ),
         name='reset_password'),
     path('profile/', views.profile, name='profile'),
+    path('dashboard/', views.dashboard, name='dashboard'),
     path("letters/", views.letter_list, name="letter_list"),
     path("letters/<int:pk>/", views.letter_detail, name="letter_detail"),
     path("letters/new/", views.letter_create, name="letter_create"),

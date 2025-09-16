@@ -105,6 +105,19 @@ def profile(request):
     return render(request, 'profile.html')
 
 @login_required
+def dashboard(request):
+    features = [
+        {
+            "title": "Letters",
+            "description": "Create, edit, and send letters to anyone.",
+            "url_name": "letter_list",
+        },
+        # future features can be added here
+        # {"title": "Another Feature", "description": "Description...", "url_name": "feature_url"},
+    ]
+    return render(request, "dashboard.html", {"features": features})
+
+@login_required
 def letter_list(request):
     letters = Letter.objects.filter(sender=request.user).order_by("-created_at")
     return render(request, "letters/letter_list.html", {"letters": letters})
