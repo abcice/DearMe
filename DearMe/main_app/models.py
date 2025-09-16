@@ -15,6 +15,7 @@ from django.conf import settings
 # Create your models here.
 class CustomUser(AbstractUser):
     birthday = models.DateField(null=True, blank=True)
+    email = models.EmailField(unique=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     timezone = models.CharField(max_length=50, default='UTC')
     is_email_verified = models.BooleanField(default=False)

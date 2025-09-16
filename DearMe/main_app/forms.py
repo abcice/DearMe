@@ -34,6 +34,12 @@ class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = CustomUser
         fields = ("username", "email", "birthday", "password1", "password2")
+    
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        if CustomUser.objects.filter(email_iexact=email).exists():
+            raise forms.ValidationError("This email is already in use. Please choose another.")
+        return email
 
 class EmailOrUsernameAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label="Username or Email")
