@@ -13,6 +13,7 @@ colorama==0.4.6
 Django==5.2.6
 django-anymail==13.1
 django-background-tasks==1.2.8
+gunicorn==23.0.0
 idna==3.10
 kombu==5.5.4
 packaging==25.0
