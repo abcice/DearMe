@@ -37,7 +37,7 @@ class CustomUserCreationForm(UserCreationForm):
     
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if CustomUser.objects.filter(email_iexact=email).exists():
+        if CustomUser.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("This email is already in use. Please choose another.")
         return email
 

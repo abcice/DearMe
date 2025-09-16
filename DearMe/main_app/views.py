@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.utils import timezone
-from .models import Letter
+from .models import Letter, CustomUser
 from .forms import LetterForm, CustomUserCreationForm, EmailOrUsernameAuthenticationForm
 from django.contrib import messages
 import brevo_python
@@ -18,6 +18,12 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from .utils import generate_email_token
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth import get_user_model
+
+
 
 
 
@@ -82,13 +88,17 @@ def signup(request):
 
             return redirect('home')
         else:
-            error_message = 'Invalid sign up - try again'
+            email = request.POST.get('email')
+            if CustomUser.objects.filter(email__iexact=email).exists():
+                messages.info(request, "Email already exists. Did you forget your password? "
+                                        "You can reset it <a href='/accounts/forgot-password/'>here</a>.")
+            else:
+                error_message = 'Invalid sign up - try again'
 
     form = CustomUserCreationForm()
     return render(request, 'signup.html', {'form': form, 'error_message': error_message})
 
 def verify_email(request, token):
-    from .models import CustomUser
     from .utils import verify_email_token
 
     user_id = verify_email_token(token)
@@ -156,3 +166,48 @@ def send_letter(request, pk):
         messages.error(request, "No recipients found or failed to send email.")
 
     return redirect("letter_detail", pk=letter.pk)
+
+
+User = get_user_model()
+
+def forgot_password(request):
+    message_sent = False
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email__iexact=email)  
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_link = request.build_absolute_uri(
+                reverse('reset_password', kwargs={'uidb64': uid, 'token': token})  
+            )
+            subject = "Reset your DearMe password"
+            message = f"""
+            Hi {user.username},<br><br>
+            You requested a password reset.<br>
+            Click this link to set a new password:<br>
+            <a href="{reset_link}">{reset_link}</a><br><br>
+            This link will expire in 24 hours.
+            """
+
+            configuration = brevo_python.Configuration()
+            configuration.api_key['api-key'] = settings.BREVO_API_KEY
+            api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(configuration))
+            send_smtp_email = brevo_python.SendSmtpEmail(
+                to=[{"email": user.email}],
+                sender={"name": "DearMe App", "email": settings.BREVO_SENDER_EMAIL},
+                subject=subject,
+                html_content=message
+            )
+            try:
+                api_instance.send_transac_email(send_smtp_email)
+                messages.success(request, "Check your email for the password reset link.")
+                message_sent = True
+            except ApiException as e:
+                messages.error(request, "Could not send email. Try again later.")
+                print(f"Brevo error: {e}")
+
+        except User.DoesNotExist:
+            messages.error(request, "No user exists with this email or it is typed incorrectly.")
+
+    return render(request, 'forgot_password.html', {'message_sent': message_sent})
