@@ -10,6 +10,7 @@ import os
 import brevo_python
 from brevo_python.rest import ApiException
 import base64
+from django.utils.text import slugify
 
 
 # ----------------------------
@@ -51,6 +52,42 @@ class CustomUser(AbstractUser):
 
 
 # ----------------------------
+# Tag Model
+# ----------------------------
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=50, unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+# ----------------------------
+# Location Model
+# ----------------------------
+class Location(models.Model):
+    name = models.CharField(max_length=255)  # e.g., "Paris"
+    country = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        parts = [self.name]
+        if self.city:
+            parts.append(self.city)
+        if self.country:
+            parts.append(self.country)
+        return ", ".join(parts)
+
+
+# ----------------------------
 # Memory Model
 # ----------------------------
 class Memory(models.Model):
@@ -69,7 +106,8 @@ class Memory(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     memory_type = models.CharField(max_length=50, choices=MEMORY_TYPE_CHOICES, default="happy")
-    tags = models.CharField(max_length=255, blank=True, help_text="Comma-separated tags")
+    tags = models.ManyToManyField("Tag", blank=True, related_name="memories")
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True, related_name="memories")
     is_private = models.BooleanField(default=True, help_text="Memory is private by default")
     take_to_grave = models.BooleanField(default=False, help_text="Memory won't be shared after death")
     photo = models.ImageField(upload_to=memory_file_path, null=True, blank=True)
@@ -101,6 +139,7 @@ class DailyDiary(models.Model):
     take_to_grave = models.BooleanField(default=False, help_text="Diary won't be shared after death")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    locations = models.ManyToManyField(Location, blank=True, related_name="diary_entries")
 
     class Meta:
         unique_together = ("owner", "entry_date")
@@ -183,7 +222,10 @@ class Letter(models.Model):
 
         if self.attachment:
             with open(self.attachment.path, "rb") as f:
-                send_smtp_email.attachment = [{"content": base64.b64encode(f.read()).decode(), "name": os.path.basename(self.attachment.name)}]
+                send_smtp_email.attachment = [{
+                    "content": base64.b64encode(f.read()).decode(),
+                    "name": os.path.basename(self.attachment.name)
+                }]
 
         try:
             response = api_instance.send_transac_email(send_smtp_email)
