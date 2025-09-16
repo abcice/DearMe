@@ -23,7 +23,6 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
 from datetime import timedelta
-from .tasks import send_letter_task
 
 
 
@@ -139,7 +138,6 @@ def letter_create(request):
             letter.save()
             form.save_m2m()  
             
-            send_letter_task.apply_async(args=[letter.pk], eta=letter.delivery_date)
 
             messages.success(request, "Letter scheduled successfully!")
             return redirect("letter_list")
@@ -163,7 +161,6 @@ def letter_edit(request, pk):
             letter.save()
             form.save_m2m()
 
-            send_letter_task.apply_async(args=[letter.pk], eta=letter.delivery_date)
 
             messages.success(request, "Letter updated and rescheduled!")
             return redirect("letter_detail", pk=letter.pk)
