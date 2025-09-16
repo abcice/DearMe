@@ -31,17 +31,6 @@ class Home(LoginView):
     template_name = 'home.html'
     authentication_form = EmailOrUsernameAuthenticationForm
 
-    def form_valid(self, form):
-        user = form.get_user()
-        if not user.is_email_verified:
-            messages.error(
-                self.request, 
-                "Your email is not verified. Please check your inbox (and junk/spam folder) "
-                "for the verification link we sent. If you didn’t receive it, sign up again or contact support."
-                            )
-            return redirect('home')
-        return super().form_valid(form)
-    
 
 def about(request):
     return render(request, 'about.html')

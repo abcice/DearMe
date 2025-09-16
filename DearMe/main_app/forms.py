@@ -49,7 +49,7 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
         password = self.cleaned_data.get("password")
 
         if username_or_email and password:
-            # Check if user entered an email
+            # check if email
             if "@" in username_or_email:
                 try:
                     user_obj = CustomUser.objects.get(email__iexact=username_or_email)
@@ -64,5 +64,11 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
             )
             if self.user_cache is None:
                 raise forms.ValidationError("Invalid login credentials.")
+
+            # check if email verified
+            if not self.user_cache.is_email_verified:
+                raise forms.ValidationError(
+                    "Your email is not verified. Please check your inbox."
+                )
 
         return self.cleaned_data
