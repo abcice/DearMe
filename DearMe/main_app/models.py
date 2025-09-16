@@ -17,6 +17,7 @@ class CustomUser(AbstractUser):
     birthday = models.DateField(null=True, blank=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     timezone = models.CharField(max_length=50, default='UTC')
+    is_email_verified = models.BooleanField(default=False)
 
     def full_name(self):
         return f"{self.first_name} {self.last_name}".strip()

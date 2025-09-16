@@ -1,5 +1,6 @@
 from django import forms
-from .models import Letter
+from django.contrib.auth.forms import UserCreationForm
+from .models import Letter, CustomUser
 
 class LetterForm(forms.ModelForm):
     class Meta:
@@ -21,3 +22,14 @@ class LetterForm(forms.ModelForm):
                 }
             ),
         }
+
+class CustomUserCreationForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+    birthday = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={"type": "date"})
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = CustomUser
+        fields = ("username", "email", "birthday", "password1", "password2")

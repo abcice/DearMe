@@ -1,24 +1,36 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView 
-from django.contrib.auth import login
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.utils import timezone
 from .models import Letter
-from .forms import LetterForm
+from .forms import LetterForm, CustomUserCreationForm
 from django.contrib import messages
 import brevo_python
 from brevo_python.rest import ApiException
 import os
+from django.core.mail import send_mail
+from django.conf import settings
+from django.urls import reverse
+from .utils import generate_email_token
 
 
 
 class Home(LoginView):
     template_name = 'home.html'
+
+    def form_valid(self, form:AuthenticationForm):
+        user = form.get_user()
+        if not user.is_email_verified:
+            messages.error(self.request, "Please verify your email before logging in.")
+            return redirect('home')
+        return super().form_valid(form)
+    
 
 def about(request):
     return render(request, 'about.html')
@@ -26,17 +38,62 @@ def about(request):
 def signup(request):
     error_message = ''
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('about') # don't forget to adjust it later
-        
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+
+            token = generate_email_token(user.id)
+            verification_link = request.build_absolute_uri(
+                reverse('verify_email', args=[token])
+            )
+            subject = "Verify your DearMe account"
+            message = f"""
+            Hi {user.username},<br><br>
+            Please verify your email by clicking this link:<br>
+            <a href="{verification_link}">{verification_link}</a><br><br>
+            This link will expire in 24 hours.
+            """
+            configuration = brevo_python.Configuration()
+            configuration.api_key['api-key'] = settings.BREVO_API_KEY
+            api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(configuration))
+
+            send_smtp_email = brevo_python.SendSmtpEmail(
+                to=[{"email": user.email}],
+                sender={"name": "DearMe App", "email": settings.BREVO_SENDER_EMAIL},
+                subject=subject,
+                html_content=message
+            )
+
+            try:
+                api_instance.send_transac_email(send_smtp_email)
+                messages.success(request, "Check your email to verify your account before logging in.")
+            except ApiException as e:
+                messages.error(request, f"Could not send verification email. Try again later.")
+                print(f"Brevo error: {e}")
+
+            return redirect('home')
         else:
             error_message = 'Invalid sign up - try again'
-    form = UserCreationForm()
-    context = {'form': form, 'error_message': error_message}
-    return render(request, 'signup.html', context)
+
+    form = CustomUserCreationForm()
+    return render(request, 'signup.html', {'form': form, 'error_message': error_message})
+
+def verify_email(request, token):
+    from .models import CustomUser
+    from .utils import verify_email_token
+
+    user_id = verify_email_token(token)
+    if user_id:
+        user = get_object_or_404(CustomUser, id=user_id)
+        user.is_active = True
+        user.is_email_verified = True
+        user.save()
+        messages.success(request, "Your email is verified! You can now log in.")
+        return redirect('home')
+    else:
+        return HttpResponse("Invalid or expired verification link.")
 
 def profile(request):
     return render(request, 'profile.html')
