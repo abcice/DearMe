@@ -1,7 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
-from .models import Letter, CustomUser
+from .models import Letter, CustomUser, Memory, DailyDiary, DiaryPhoto
+from django.forms import FileInput
+
+
 
 class LetterForm(forms.ModelForm):
     class Meta:
@@ -94,3 +97,74 @@ class ProfileForm(forms.ModelForm):
         if CustomUser.objects.filter(email__iexact=email).exclude(pk=user.pk).exists():
             raise forms.ValidationError("This email is already in use.")
         return email
+
+
+class MemoryForm(forms.ModelForm):
+    class Meta:
+        model = Memory
+        fields = [
+            "title",
+            "description",
+            "memory_type",
+            "tags",
+            "location",
+            "is_private",
+            "take_to_grave",
+            "photo",
+            "audio",
+            "video",
+            "memory_date",
+        ]
+        widgets = {
+            "memory_date": forms.DateInput(attrs={"type": "date"}),
+        }
+
+
+class DailyDiaryForm(forms.ModelForm):
+    memories = forms.ModelMultipleChoiceField(
+        queryset=Memory.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        help_text="Select memories to include in this diary entry"
+    )
+
+    photos = forms.FileField(
+        required=False,
+        help_text="Upload one or more photos"
+    )
+
+
+    class Meta:
+        model = DailyDiary
+        fields = [
+            "entry_date",
+            "text",
+            "memories",
+            "photos",
+            "audio",
+            "favorite_music",
+            "favorite_foods",
+            "favorite_shows",
+            "take_to_grave",
+            "locations",
+        ]
+        widgets = {
+            "entry_date": forms.DateInput(attrs={"type": "date"}),
+            "text": forms.Textarea(attrs={"rows": 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        if user:
+            self.fields["memories"].queryset = Memory.objects.filter(owner=user)
+
+    def save(self, commit=True):
+        diary = super().save(commit=commit)
+        
+        # Handle multiple photos
+        if self.files.getlist("photos"):
+            for photo_file in self.files.getlist("photos"):
+                DiaryPhoto.objects.create(diary=diary, image=photo_file)
+        
+        return diary

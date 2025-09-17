@@ -29,15 +29,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", "False") == "True"
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 ALLOWED_HOSTS = [
-    ".onrender.com",
-    os.environ.get("RENDER_EXTERNAL_HOSTNAME", ""),  # Render sets this
+    "127.0.0.1",      # local dev
+    "localhost",      # local dev
+    ".onrender.com",  # render deploy
+    os.environ.get("RENDER_EXTERNAL_HOSTNAME", ""),
 ]
 CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",                     # local dev
+    "http://localhost:8000",                     # local dev
     "https://" + os.environ.get("RENDER_EXTERNAL_HOSTNAME", ""),
-    "https://dearme-gpst.onrender.com",               # your service URL
+    "https://dearme-gpst.onrender.com",          # render deploy
 ]
 # Application definition
 
@@ -159,7 +163,7 @@ BREVO_SENDER_EMAIL = config("BREVO_SENDER_EMAIL")
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = str(BASE_DIR / 'media')
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 FIELD_ENCRYPTION_KEY = config("FIELD_ENCRYPTION_KEY")
 

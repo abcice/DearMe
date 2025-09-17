@@ -8,8 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.utils import timezone
-from .models import Letter, CustomUser
-from .forms import LetterForm, CustomUserCreationForm, EmailOrUsernameAuthenticationForm, ProfileForm
+from .models import Letter, CustomUser, Memory, DailyDiary
+from .forms import LetterForm, CustomUserCreationForm, EmailOrUsernameAuthenticationForm, ProfileForm, MemoryForm, DailyDiaryForm
 from django.contrib import messages
 import brevo_python
 from brevo_python.rest import ApiException
@@ -24,7 +24,8 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth import get_user_model
 from datetime import timedelta, date
 from django.contrib.auth import logout
-
+from django.db.models import Q
+import random
 
 
 
@@ -113,10 +114,24 @@ def dashboard(request):
             "description": "Create, edit, and send letters to anyone.",
             "url_name": "letter_list",
         },
-        # future features can be added here
-        # {"title": "Another Feature", "description": "Description...", "url_name": "feature_url"},
+        {
+            "title": "Memories",
+            "description": "Create, view, and relive your personal memories.",
+            "url_name": "memory_list",
+        },
+        {
+            "title": "Daily Diary",
+            "description": "Write your thoughts and reflections every day.",
+            "url_name": "diary_list",
+        },
+        {
+            "title": "I'm Sad",
+            "description": "Get a random happy memory to lift your mood.",
+            "url_name": "random_happy_memory",
+        },
     ]
     return render(request, "dashboard.html", {"features": features})
+
 
 @login_required
 def letter_list(request):
@@ -269,3 +284,146 @@ def delete_profile(request):
         messages.success(request, "Your account has been deleted successfully.")
         return redirect("home")
     return redirect("edit_profile")
+
+
+
+@login_required
+def memory_list(request):
+    memories = Memory.objects.filter(owner=request.user)
+    return render(request, "memories/memory_list.html", {"memories": memories})
+
+
+@login_required
+def memory_detail(request, pk):
+    memory = get_object_or_404(Memory, pk=pk, owner=request.user)
+    return render(request, "memories/memory_detail.html", {"memory": memory})
+
+
+@login_required
+def memory_create(request):
+    if request.method == "POST":
+        form = MemoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            memory = form.save(commit=False)
+            memory.owner = request.user
+            memory.save()
+            form.save_m2m()
+            messages.success(request, "Memory saved successfully!")
+            return redirect("memory_list")
+    else:
+        form = MemoryForm()
+    return render(request, "memories/memory_form.html", {"form": form})
+
+
+@login_required
+def memory_edit(request, pk):
+    memory = get_object_or_404(Memory, pk=pk, owner=request.user)
+    if request.method == "POST":
+        form = MemoryForm(request.POST, request.FILES, instance=memory)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Memory updated successfully!")
+            return redirect("memory_detail", pk=pk)
+    else:
+        form = MemoryForm(instance=memory)
+    return render(request, "memories/memory_form.html", {"form": form})
+
+
+@login_required
+def memory_delete(request, pk):
+    memory = get_object_or_404(Memory, pk=pk, owner=request.user)
+    if request.method == "POST":
+        memory.delete()
+        messages.success(request, "Memory deleted.")
+        return redirect("memory_list")
+    return render(request, "memories/memory_confirm_delete.html", {"memory": memory})
+
+
+# Random happy memory (for "I'm sad" button)
+@login_required
+def random_happy_memory(request):
+    memories = Memory.objects.filter(owner=request.user, memory_type="happy")
+    if memories:
+        memory = random.choice(memories)
+        # Pass view_only=True so template knows to hide edit/delete
+        return render(request, "memories/memory_detail.html", {"memory": memory, "view_only": True})
+    messages.info(request, "No happy memories found. Create one first!")
+    return redirect("memory_list")
+
+
+
+# Filter by emotion
+@login_required
+def memory_by_type(request, memory_type):
+    memories = Memory.objects.filter(owner=request.user, memory_type=memory_type)
+    return render(request, "memories/memory_list.html", {"memories": memories, "filter": memory_type})
+
+
+# Filter by location
+@login_required
+def memory_by_location(request, location_id):
+    memories = Memory.objects.filter(owner=request.user, location_id=location_id)
+    return render(request, "memories/memory_list.html", {"memories": memories, "filter": "location"})
+
+
+# Filter by date
+@login_required
+def memory_by_date(request, date_str):
+    memories = Memory.objects.filter(owner=request.user, memory_date=date_str)
+    return render(request, "memories/memory_list.html", {"memories": memories, "filter": date_str})
+
+# -------------------
+# Daily Diary Views
+# -------------------
+
+@login_required
+def diary_list(request):
+    diaries = DailyDiary.objects.filter(owner=request.user)
+    return render(request, "diary/diary_list.html", {"diaries": diaries})
+
+
+@login_required
+def diary_detail(request, pk):
+    diary = get_object_or_404(DailyDiary, pk=pk, owner=request.user)
+    return render(request, "diary/diary_detail.html", {"diary": diary})
+
+
+@login_required
+def diary_create(request):
+    if request.method == "POST":
+        form = DailyDiaryForm(request.POST, request.FILES, user=request.user)
+        if form.is_valid():
+            diary = form.save(commit=False)
+            diary.owner = request.user
+            diary.save()
+            form.save_m2m()
+            messages.success(request, "Diary entry created successfully!")
+            return redirect("diary_list")
+    else:
+        form = DailyDiaryForm(user=request.user)
+    return render(request, "diary/diary_form.html", {"form": form})
+
+
+
+@login_required
+def diary_edit(request, pk):
+    diary = get_object_or_404(DailyDiary, pk=pk, owner=request.user)
+    if request.method == "POST":
+        form = DailyDiaryForm(request.POST, request.FILES, instance=diary)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Diary entry updated successfully!")
+            return redirect("diary_detail", pk=pk)
+    else:
+        form = DailyDiaryForm(instance=diary)
+    return render(request, "diary/diary_form.html", {"form": form})
+
+
+@login_required
+def diary_delete(request, pk):
+    diary = get_object_or_404(DailyDiary, pk=pk, owner=request.user)
+    if request.method == "POST":
+        diary.delete()
+        messages.success(request, "Diary entry deleted.")
+        return redirect("diary_list")
+    return render(request, "diary/diary_confirm_delete.html", {"diary": diary})

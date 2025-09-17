@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="memory-detail">
+    <div class="memory-photo">
+      {% if memory.photo %}
+        <img src="{{ memory.photo.url }}" alt="{{ memory.title }}">
+      {% endif %}
+    </div>
+    <div class="memory-info">
+      <h1>{{ memory.title }}</h1>
+      <p><strong>Date:</strong> {{ memory.memory_date }}</p>
+      <p><strong>Type:</strong> {{ memory.get_memory_type_display }}</p>
+      <p>{{ memory.description }}</p>
+
+      {% if not view_only %}
+        <a href="{% url 'memory_edit' memory.pk %}" class="btn edit-btn">Edit</a>
+        <form method="post" action="{% url 'memory_delete' memory.pk %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn delete-btn">Delete</button>
+        </form>
+      {% endif %}
+      <a href="{% url 'memory_list' %}" class="btn">Back to list</a>
+    </div>
+  </div>
+{% endblock %}

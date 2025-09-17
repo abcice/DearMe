@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="diary-page">
+  <div class="page-header">
+    <h1>{{ diary.entry_date }}</h1>
+    <div class="actions">
+      <a href="{% url 'diary_edit' diary.pk %}" class="btn edit-btn">✏️ Edit</a>
+      <form method="post" action="{% url 'diary_delete' diary.pk %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="btn delete-btn">🗑️ Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="page-content">
+    <p>{{ diary.text|linebreaks }}</p>
+
+    {% if diary.photo %}
+      <img src="{{ diary.photo.url }}" alt="Diary photo" class="diary-media" />
+    {% endif %}
+    {% if diary.audio %}
+      <audio controls src="{{ diary.audio.url }}"></audio>
+    {% endif %}
+
+    {% if diary.memories.all %}
+      <h3>✨ Linked Memories:</h3>
+      <ul>
+        {% for memory in diary.memories.all %}
+          <li>
+            <a href="{% url 'memory_detail' memory.pk %}">{{ memory.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

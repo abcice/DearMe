@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="diary-form-container">
+  <h1>{% if form.instance.pk %}Edit Entry{% else %}New Entry{% endif %}</h1>
+
+  <form method="post" enctype="multipart/form-data" class="diary-form">
+    {% csrf_token %}
+
+    <div class="form-section">
+      {{ form.entry_date.label_tag }} {{ form.entry_date }}
+    </div>
+
+    <div class="form-section">
+      {{ form.text.label_tag }}
+      {{ form.text }}
+    </div>
+
+    <!-- Memories Gallery -->
+    <div class="form-section">
+      <h3>Select Memories to include</h3>
+      <div class="memory-gallery">
+        {% for memory in form.fields.memories.queryset %}
+          <label class="memory-card">
+            <input type="checkbox" name="memories" value="{{ memory.id }}"
+              {% if memory in form.initial.memories.all %}checked{% endif %}>
+            {% if memory.photo %}
+              <img src="{{ memory.photo.url }}" alt="{{ memory.title }}">
+            {% endif %}
+            <div class="memory-info">
+              <strong>{{ memory.title }}</strong>
+              <p>{{ memory.description|truncatewords:12 }}</p>
+            </div>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Preview area -->
+    <div class="form-section">
+      <h3>Selected Memories</h3>
+      <div id="memory-preview" class="preview-grid"></div>
+    </div>
+
+    <!-- Additional Fields -->
+    <div class="form-section">
+      {{ form.audio.label_tag }} {{ form.audio }}
+    </div>
+    <div class="form-section">
+      {{ form.photos.label_tag }} {{ form.photos }}
+    </div>
+    <div class="form-section">
+      {{ form.favorite_music.label_tag }} {{ form.favorite_music }}
+    </div>
+    <div class="form-section">
+      {{ form.favorite_foods.label_tag }} {{ form.favorite_foods }}
+    </div>
+    <div class="form-section">
+      {{ form.favorite_shows.label_tag }} {{ form.favorite_shows }}
+    </div>
+    <div class="form-section">
+      {{ form.take_to_grave.label_tag }} {{ form.take_to_grave }}
+    </div>
+    <div class="form-section">
+      {{ form.locations.label_tag }} {{ form.locations }}
+    </div>
+
+    <button type="submit" class="btn submit">Save Entry</button>
+  </form>
+</div>
+
+<!-- Include the external CSS -->
+<link rel="stylesheet" href="{% static 'css/diary_form.css' %}">
+
+<script>
+  const checkboxes = document.querySelectorAll('.memory-card input[type="checkbox"]');
+  const preview = document.getElementById("memory-preview");
+
+  function updatePreview() {
+    preview.innerHTML = "";
+    checkboxes.forEach(cb => {
+      if (cb.checked) {
+        const card = cb.closest('.memory-card').cloneNode(true);
+        card.querySelector('input').remove();
+        card.classList.remove('memory-card');
+        card.classList.add('preview-card');
+
+        // Add remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.innerHTML = '×';
+        removeBtn.classList.add('remove-memory-btn');
+        removeBtn.addEventListener('click', () => {
+          cb.checked = false;
+          updatePreview();
+        });
+        card.appendChild(removeBtn);
+
+        preview.appendChild(card);
+      }
+    });
+  }
+
+  checkboxes.forEach(cb => cb.addEventListener("change", updatePreview));
+  updatePreview();
+</script>
+
+{% endblock %}

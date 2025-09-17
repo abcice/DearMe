@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="confirm-delete">
+  <h1>Are you sure you want to delete this entry?</h1>
+  <p><strong>{{ diary.entry_date }}</strong>: {{ diary.text|truncatechars:100 }}</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn delete-btn">Yes, Delete</button>
+    <a href="{% url 'diary_detail' diary.pk %}" class="btn">Cancel</a>
+  </form>
+</div>
+{% endblock %}

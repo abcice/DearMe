@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>My Memories</h1>
+  <a href="{% url 'memory_create' %}" class="btn submit">+ New Memory</a>
+
+  {% if memories %}
+    <div class="memory-gallery">
+      {% for memory in memories %}
+        <a href="{% url 'memory_detail' memory.pk %}" class="memory-frame">
+          {% if memory.photo %}
+            <img src="{{ memory.photo.url }}" alt="{{ memory.title }}">
+          {% else %}
+            <div class="no-photo">No Photo</div>
+          {% endif %}
+          <h3>{{ memory.title }}</h3>
+          <p>{{ memory.memory_date }}</p>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No memories yet. Start by <a href="{% url 'memory_create' %}">adding one</a>.</p>
+  {% endif %}
+{% endblock %}
