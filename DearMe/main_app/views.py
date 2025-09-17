@@ -39,7 +39,6 @@ def about(request):
     return render(request, 'about.html')
 
 def signup(request):
-    error_message = ''
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -51,6 +50,7 @@ def signup(request):
             verification_link = request.build_absolute_uri(
                 reverse('verify_email', args=[token])
             )
+
             subject = "Verify your DearMe account"
             message = f"""
             Hi {user.username},<br><br>
@@ -58,6 +58,7 @@ def signup(request):
             <a href="{verification_link}">{verification_link}</a><br><br>
             This link will expire in 24 hours.
             """
+
             configuration = brevo_python.Configuration()
             configuration.api_key['api-key'] = settings.BREVO_API_KEY
             api_instance = brevo_python.TransactionalEmailsApi(brevo_python.ApiClient(configuration))
@@ -71,24 +72,27 @@ def signup(request):
 
             try:
                 api_instance.send_transac_email(send_smtp_email)
-                messages.success(request, "We've sent you an email with a verification link. "
-                "Please check your inbox and junk/spam folder. "
-                "Add our email to your safe senders list so you don’t miss future emails.")
+                messages.success(
+                    request,
+                    "We've sent you an email with a verification link. "
+                    "Please check your inbox and spam/junk folder."
+                )
             except ApiException as e:
-                messages.error(request, f"Could not send verification email. Try again later.")
+                messages.error(request, "Could not send verification email. Try again later.")
                 print(f"Brevo error: {e}")
 
-            return redirect('home')
+            return render(request, 'check_email.html', {'email': user.email})
         else:
-            email = request.POST.get('email')
-            if CustomUser.objects.filter(email__iexact=email).exists():
-                messages.info(request, "Email already exists. Did you forget your password? "
-                                        "You can reset it <a href='/accounts/forgot-password/'>here</a>.")
-            else:
-                error_message = 'Invalid sign up - try again'
+            # Form invalid: either username/password issues or email already exists
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = CustomUserCreationForm()
 
-    form = CustomUserCreationForm()
-    return render(request, 'signup.html', {'form': form, 'error_message': error_message})
+    return render(request, 'signup.html', {'form': form})
+
+
 
 def verify_email(request, token):
     from .utils import verify_email_token
