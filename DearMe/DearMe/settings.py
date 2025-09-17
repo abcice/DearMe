@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'main_app',
     'crispy_forms',
     "crispy_bootstrap5",
+    'django_crontab',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -162,3 +163,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 EMAIL_HOST_USER = config("EMAIL_HOST_USER")
 FIELD_ENCRYPTION_KEY = config("FIELD_ENCRYPTION_KEY")
 
+# CRONJOBS = [
+#     ('0 */6 * * *', 'django.core.management.call_command', ['send_due_letters']),
+# ]
+CRONJOBS = [
+    ('*/2 * * * *', 'django.core.management.call_command', ['send_due_letters']),
+]
