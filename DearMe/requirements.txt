@@ -19,6 +19,7 @@ Django==5.2.6
 django-anymail==13.1
 django-background-tasks==1.2.8
 django-crispy-forms==2.4
+django-crontab==0.7.1
 django-encrypted-model-fields==0.6.5
 filelock==3.19.1
 git-filter-repo==2.47.0
