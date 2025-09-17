@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/memories/memory_confirm_delete.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+  <h1 class="delete-title">Delete Memory</h1>
+
+  <p class="delete-message">
+    You are about to permanently delete  
+    <span class="memory-highlight">"{{ memory.title }}"</span>.  
+    This action <strong>cannot be undone</strong>.
+  </p>
+
+  {% if memory.photo %}
+    <div class="delete-preview">
+      <img src="{{ memory.photo.url }}" alt="{{ memory.title }}">
+    </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="delete-actions">
+      <button type="submit" class="btn delete-btn">Yes, Delete</button>
+      <a href="{% url 'memory_detail' memory.pk %}" class="btn cancel-btn">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

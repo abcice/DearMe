@@ -1,25 +1,59 @@
 {% extends "base.html" %}
-{% block content %}
-  <div class="memory-detail">
-    <div class="memory-photo">
-      {% if memory.photo %}
-        <img src="{{ memory.photo.url }}" alt="{{ memory.title }}">
-      {% endif %}
-    </div>
-    <div class="memory-info">
-      <h1>{{ memory.title }}</h1>
-      <p><strong>Date:</strong> {{ memory.memory_date }}</p>
-      <p><strong>Type:</strong> {{ memory.get_memory_type_display }}</p>
-      <p>{{ memory.description }}</p>
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/memories/memory_detail.css' %}" />
+{% endblock %}
 
-      {% if not view_only %}
-        <a href="{% url 'memory_edit' memory.pk %}" class="btn edit-btn">Edit</a>
-        <form method="post" action="{% url 'memory_delete' memory.pk %}" style="display:inline;">
-          {% csrf_token %}
-          <button type="submit" class="btn delete-btn">Delete</button>
-        </form>
-      {% endif %}
-      <a href="{% url 'memory_list' %}" class="btn">Back to list</a>
-    </div>
+{% block content %}
+<div class="memory-detail-container">
+
+  <h1 class="memory-title">{{ memory.title }}</h1>
+
+  <div id="memory-gallery" class="memory-gallery">
+    {% if memory.photo %}
+      <a href="{{ memory.photo.url }}" class="memory-photo-frame">
+        <img src="{{ memory.photo.url }}" alt="{{ memory.title }}">
+      </a>
+    {% endif %}
   </div>
+
+  <div class="memory-info">
+    <p class="memory-description">{{ memory.description }}</p>
+    <p class="memory-meta"><strong>Location:</strong>
+    {% if memory.location %}
+        {{ memory.location.name }}
+    {% else %}
+        N/A
+    {% endif %}
+</p>
+
+    <p class="memory-meta"><strong>Tags:</strong>
+      {% for tag in memory.tags.all %}
+        <span class="tag">#{{ tag.name }}</span>
+      {% empty %}
+        No tags
+      {% endfor %}
+    </p>
+    <p class="memory-meta"><strong>Date:</strong> {{ memory.memory_date }}</p>
+  </div>
+
+  {% if not view_only %}
+    <div class="memory-actions">
+      <a href="{% url 'memory_edit' memory.pk %}" class="btn edit-btn">Edit</a>
+      <a href="{% url 'memory_delete' memory.pk %}" class="btn delete-btn">Delete</a>
+    </div>
+
+  {% endif %}
+
+  <a href="{% url 'memory_list' %}" class="btn back-btn">Back to list</a>
+
+</div>
+
+<script>
+  lightGallery(document.getElementById('memory-gallery'), {
+    plugins: [lgZoom],
+    speed: 500,
+    zoom: true
+  });
+</script>
 {% endblock %}

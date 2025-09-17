@@ -1,10 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
-from .models import Letter, CustomUser, Memory, DailyDiary, DiaryPhoto
+from .models import Letter, CustomUser, Memory, DailyDiary, DiaryPhoto, Tag, Location
 from django.forms import FileInput
-
-
+from django.utils.text import slugify
 
 class LetterForm(forms.ModelForm):
     class Meta:
@@ -52,7 +51,6 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
         password = self.cleaned_data.get("password")
 
         if username_or_email and password:
-            # check if email
             if "@" in username_or_email:
                 try:
                     user_obj = CustomUser.objects.get(email__iexact=username_or_email)
@@ -99,25 +97,79 @@ class ProfileForm(forms.ModelForm):
         return email
 
 
+from django import forms
+from .models import Memory, Tag, Location
+
 class MemoryForm(forms.ModelForm):
+    tags_input = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            "placeholder": "Add tags... #tag1 #tag2",
+            "class": "tags-input"
+        }),
+        help_text="Type tags and press enter. Suggestions will appear while typing."
+    )
+    location_input = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            "placeholder": "Add a location",
+            "class": "location-input"
+        }),
+        help_text="Start typing a location for suggestions."
+    )
+
     class Meta:
         model = Memory
         fields = [
             "title",
             "description",
             "memory_type",
-            "tags",
-            "location",
-            "is_private",
+            "tags_input",
+            "location_input",
             "take_to_grave",
             "photo",
             "audio",
-            "video",
             "memory_date",
         ]
         widgets = {
-            "memory_date": forms.DateInput(attrs={"type": "date"}),
+            "memory_date": forms.DateInput(attrs={
+                "type": "date",
+                "class": "calendar-input"
+            }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['tags_input'].initial = ' '.join(f"#{t.name}" for t in self.instance.tags.all())
+            if self.instance.location:
+                self.fields['location_input'].initial = self.instance.location.name
+
+    def clean_tags_input(self):
+        """Convert user input into Tag objects."""
+        tags_str = self.cleaned_data.get("tags_input", "")
+        tags_list = [t.strip().lstrip('#') for t in tags_str.split() if t.strip()]
+        tags_objs = []
+        for t in tags_list:
+            tag, _ = Tag.objects.get_or_create(name__iexact=t, defaults={"name": t})
+            tags_objs.append(tag)
+        return tags_objs
+
+    def clean_location_input(self):
+        """Get or create a Location object (case-insensitive)."""
+        loc_str = self.cleaned_data.get("location_input", "").strip()
+        if not loc_str:
+            return None
+        loc_obj, _ = Location.objects.get_or_create(name__iexact=loc_str, defaults={"name": loc_str})
+        return loc_obj
+
+    def save(self, commit=True):
+        memory = super().save(commit=False)
+        memory.location = self.cleaned_data.get('location_input')
+        if commit:
+            memory.save()
+            memory.tags.set(self.cleaned_data.get('tags_input', []))
+        return memory
 
 
 class DailyDiaryForm(forms.ModelForm):

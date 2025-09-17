@@ -13,13 +13,14 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 15px 30px;
-  background-color: #ffffffcc; /* slightly translucent navbar */
+  background-color: #ffffffcc; 
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
   backdrop-filter: blur(5px);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
+  position: static;
+  top: auto;
+  z-index: auto;
 }
+
 
 .header-logo-container img {
   height: 50px;

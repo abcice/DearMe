@@ -1,0 +1,233 @@
+.memory-form-container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 40px 25px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(95, 59, 204, 0.15);
+  font-family: 'Fredoka', sans-serif;
+  box-sizing: border-box;
+}
+
+.memory-form-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #5f3bcc;
+  text-align: center;
+  margin-bottom: 30px;
+  text-shadow: 0 0 6px rgba(95, 59, 204, 0.2);
+}
+
+.memory-form .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  position: relative; /* for suggestions box */
+  width: 100%;
+}
+
+.memory-form label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.memory-form input,
+.memory-form textarea,
+.memory-form select {
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.memory-form input:focus,
+.memory-form textarea:focus,
+.memory-form select:focus {
+  border-color: #7a5cff;
+  box-shadow: 0 0 10px rgba(122, 92, 255, 0.2);
+  outline: none;
+}
+
+.memory-form textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.help-text {
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 3px;
+}
+
+.error-text {
+  font-size: 0.85rem;
+  color: #e74c3c;
+  margin-top: 3px;
+}
+
+.tags-input,
+.location-input {
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-family: 'Roboto', sans-serif;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.suggestions-box {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-height: 140px;
+  overflow-y: auto;
+  width: 100%;
+  z-index: 100;
+  margin-top: 2px;
+  box-shadow: 0 4px 12px rgba(95, 59, 204, 0.15);
+}
+
+.suggestion-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.suggestion-item:hover {
+  background: #f0eaff;
+}
+
+.custom-file-input {
+  position: relative;
+  width: 100%;
+}
+
+.custom-file-input input[type="file"] {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-button {
+  display: inline-block;
+  padding: 12px 20px;
+  background: #f0eaff;
+  color: #5f3bcc;
+  border-radius: 12px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.file-button:hover {
+  background: #e0d7ff;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+  flex-wrap: wrap;
+}
+
+.btn-submit {
+  background: linear-gradient(135deg, #a88fff, #7a5cff);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  padding: 12px 30px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+  background: linear-gradient(135deg, #7a5cff, #5c3dbf);
+  transform: translateY(-2px);
+}
+
+.btn-cancel {
+  background: #f0eaff;
+  color: #5f3bcc;
+  font-weight: 600;
+  padding: 12px 30px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-cancel:hover {
+  background: #e0d7ff;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .memory-form-container {
+    padding: 30px 20px;
+  }
+  .memory-form-title {
+    font-size: 1.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+.suggestions-box {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  max-height: 140px;
+  overflow-y: auto;
+  width: 100%;
+  z-index: 100;
+  margin-top: 2px;
+  box-shadow: 0 4px 12px rgba(95, 59, 204, 0.15);
+  display: none; /* hidden by default */
+}
+
+.suggestion-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.suggestion-item:hover {
+  background: #f0eaff;
+}

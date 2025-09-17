@@ -1,11 +1,178 @@
 {% extends "base.html" %}
-{% block content %}
-  <h1>{% if form.instance.pk %}Edit Memory{% else %}New Memory{% endif %}</h1>
+{% load static %}
 
-  <form method="post" enctype="multipart/form-data">
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/memories/memory_form.css' %}" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="memory-form-container">
+  <h1 class="memory-form-title">
+    {% if form.instance.pk %}Edit Memory{% else %}New Memory{% endif %}
+  </h1>
+
+  <form method="post" enctype="multipart/form-data" class="memory-form">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save</button>
+    
+    <!-- Title -->
+    <div class="form-group">
+      {{ form.title.label_tag }}
+      {{ form.title }}
+    </div>
+
+    <!-- Description -->
+    <div class="form-group">
+      {{ form.description.label_tag }}
+      {{ form.description }}
+    </div>
+
+    <!-- Memory Type -->
+    <div class="form-group">
+      {{ form.memory_type.label_tag }}
+      {{ form.memory_type }}
+    </div>
+
+    <!-- Tags -->
+    <div class="form-group">
+      {{ form.tags_input.label_tag }}
+      {{ form.tags_input }}
+      <div id="tags-suggestions" class="suggestions-box"></div>
+    </div>
+
+    <!-- Location -->
+    <div class="form-group">
+      {{ form.location_input.label_tag }}
+      {{ form.location_input }}
+      <div id="location-suggestions" class="suggestions-box"></div>
+    </div>
+
+    <!-- Memory Date -->
+    <div class="form-group">
+      {{ form.memory_date.label_tag }}
+      {{ form.memory_date }}
+    </div>
+
+    <!-- Photo Upload -->
+<div class="form-group">
+  <label for="{{ form.photo.id_for_label }}">Photo</label>
+  <div class="custom-file-input">
+    {{ form.photo }}
+    <span class="file-button">Choose Photo</span>
+  </div>
+  <!-- Image Preview -->
+  <div id="photo-preview" class="file-preview"></div>
+</div>
+
+<!-- Audio Upload -->
+<div class="form-group">
+  <label for="{{ form.audio.id_for_label }}">Audio</label>
+  <div class="custom-file-input">
+    {{ form.audio }}
+    <span class="file-button">Choose Audio</span>
+  </div>
+  <!-- Audio Preview -->
+  <div id="audio-preview" class="file-preview"></div>
+</div>
+
+
+    <!-- Take to Grave Checkbox -->
+    <div class="checkbox-group">
+      {{ form.take_to_grave }}
+      <label for="{{ form.take_to_grave.id_for_label }}">Take to your grave</label>
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-buttons">
+      <button type="submit" class="btn-submit">Save Memory</button>
+      <a href="{% url 'memory_list' %}" class="btn-cancel">Cancel</a>
+    </div>
+
   </form>
-  <a href="{% url 'memory_list' %}">Cancel</a>
+</div>
+
+<script>
+$(function() {
+  function setupAutocomplete(inputSelector, suggestionSelector, items, prefix = '') {
+    const input = $(inputSelector);
+    const box = $(suggestionSelector);
+
+    input.on('input', function() {
+      let val = $(this).val().split(' ').pop();
+      if (prefix) val = val.replace(prefix, '');
+      if (!val.trim()) { box.hide(); return; }
+
+      let matches = items.filter(i => i.toLowerCase().startsWith(val.toLowerCase()));
+      box.empty();
+
+      if (matches.length === 0) { box.hide(); return; }
+
+      matches.forEach(m => {
+        box.append(`<div class="suggestion-item">${prefix}${m}</div>`);
+      });
+      box.show();
+    });
+
+    box.on('click', '.suggestion-item', function() {
+      let words = input.val().split(' ');
+      words.pop();
+      words.push($(this).text());
+      input.val(words.join(' ') + ' ');
+      box.hide();
+    });
+
+    $(document).on('click', function(e) {
+      if (!$(e.target).closest(inputSelector).length && !$(e.target).closest(suggestionSelector).length) {
+        box.hide();
+      }
+    });
+  }
+
+  // TAGS autocomplete with #
+  var tags = [
+    {% for tag in Tag.objects.all %}"{{ tag.name }}",{% endfor %}
+  ];
+  setupAutocomplete('.tags-input', '#tags-suggestions', tags, '#');
+
+  // LOCATION autocomplete
+  var locations = [
+    {% for loc in Location.objects.all %}"{{ loc.name }}",{% endfor %}
+  ];
+  setupAutocomplete('.location-input', '#location-suggestions', locations);
+});
+
+// PHOTO PREVIEW
+const photoInput = document.querySelector('input[name="photo"]');
+const photoPreview = document.getElementById('photo-preview');
+
+photoInput.addEventListener('change', function() {
+    photoPreview.innerHTML = ""; // clear previous
+    const file = this.files[0];
+    if (file) {
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.style.maxWidth = "200px";
+        img.style.maxHeight = "200px";
+        img.style.marginTop = "10px";
+        photoPreview.appendChild(img);
+    }
+});
+
+// AUDIO PREVIEW
+const audioInput = document.querySelector('input[name="audio"]');
+const audioPreview = document.getElementById('audio-preview');
+
+audioInput.addEventListener('change', function() {
+    audioPreview.innerHTML = ""; // clear previous
+    const file = this.files[0];
+    if (file) {
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.src = URL.createObjectURL(file);
+        audio.style.marginTop = "10px";
+        audioPreview.appendChild(audio);
+    }
+});
+
+</script>
 {% endblock %}

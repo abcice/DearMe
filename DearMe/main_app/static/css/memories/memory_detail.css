@@ -1,23 +1,162 @@
-/* --- Memory Detail --- */
-.memory-detail {
-    display: flex;
-    gap: 30px;
-    align-items: flex-start;
-    background: #fff;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+/* --- Container --- */
+.memory-detail-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center everything horizontally */
 }
 
-.memory-photo img {
-    width: 300px;
-    height: 220px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 5px solid #f3f4f6; /* photo frame look */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+/* --- Title --- */
+.memory-title {
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 2.4rem;
+  margin-bottom: 25px;
+  color: #5f3bcc;
+  text-shadow: 0 0 6px rgba(95, 59, 204, 0.15);
 }
 
+/* --- Gallery --- */
+.memory-gallery {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.memory-photo-frame {
+  border: 10px solid #f0eaff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(95, 59, 204, 0.15);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  max-width: 100%;
+}
+
+.memory-photo-frame:hover {
+  transform: scale(1.03);
+}
+
+.memory-photo-frame img {
+  width: 100%;
+  height: 450px;
+  object-fit: cover;
+  display: block;
+}
+
+/* --- Info Section --- */
 .memory-info {
-    flex: 1;
+  width: 100%;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.memory-description {
+  font-size: 1.05rem;
+  margin-bottom: 15px;
+}
+
+.memory-meta {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.tag {
+  background: #e0f7fa;
+  color: #00796b;
+  padding: 3px 8px;
+  border-radius: 8px;
+  margin-right: 5px;
+  font-size: 0.85rem;
+}
+
+/* --- Buttons --- */
+.memory-actions {
+  margin-bottom: 25px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center; /* center buttons under content */
+  width: 100%;
+}
+
+.memory-actions .btn {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-block;
+  text-align: center;
+}
+
+/* Edit button */
+.memory-actions .edit-btn {
+  background: linear-gradient(135deg, #a88fff, #7a5cff);
+  color: #fff;
+}
+
+.memory-actions .edit-btn:hover {
+  background: linear-gradient(135deg, #7a5cff, #5c3dbf);
+  transform: translateY(-2px);
+}
+
+/* Delete button */
+.memory-actions .delete-btn {
+  background: #ff6b6b;
+  color: #fff;
+}
+
+.memory-actions .delete-btn:hover {
+  background: #e94545;
+  transform: translateY(-2px);
+}
+
+/* Back button */
+.back-btn {
+  background: #5f3bcc;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 12px;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  margin: 15px 0 50px 0;
+}
+
+.back-btn:hover {
+  background: #7a5cff;
+  transform: translateY(-2px);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .memory-photo-frame img {
+    height: 350px;
+  }
+
+  .memory-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .memory-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
