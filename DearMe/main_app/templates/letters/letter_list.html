@@ -1,22 +1,36 @@
 {% extends "base.html" %}
-{% block content %}
-  <h1>My Letters</h1>
+{% load static %}
 
-  <a href="{% url 'letter_create' %}">+ New Letter</a>
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/letters/letter_list.css' %}" />
+{% endblock %}
+
+{% block content %}
+<div class="letters-container">
+  <h1 class="letters-title">My Letters</h1>
+
+  <a href="{% url 'letter_create' %}" class="btn-new-letter">+ New Letter</a>
 
   {% if letters %}
-    <ul>
+    <div class="letters-grid">
       {% for letter in letters %}
-        <li>
-          <a href="{% url 'letter_detail' letter.pk %}">
-            {{ letter.subject }}
-          </a> 
-          - Status: {{ letter.get_status_display }}  
-          - Scheduled for: {{ letter.delivery_date|date:"Y-m-d H:i" }}
-        </li>
+      <div class="letter-card">
+        <div class="letter-icon">
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+        <h3 class="letter-subject">{{ letter.subject }}</h3>
+        <p class="letter-status">
+          Status: <strong>{{ letter.get_status_display }}</strong>
+        </p>
+        <p class="letter-date">
+          Scheduled for: {{ letter.delivery_date|date:"Y-m-d H:i" }}
+        </p>
+        <a href="{% url 'letter_detail' letter.pk %}" class="btn-view-letter">View</a>
+      </div>
       {% endfor %}
-    </ul>
+    </div>
   {% else %}
-    <p>You haven’t written any letters yet.</p>
+    <p class="no-letters">You haven’t written any letters yet.</p>
   {% endif %}
+</div>
 {% endblock %}

@@ -1,0 +1,118 @@
+.letters-container {
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+  background: #f4f0fa;
+  min-height: 80vh;
+}
+
+.letters-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #5f3bcc;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.btn-new-letter {
+  display: inline-block;
+  background: linear-gradient(135deg, #a88fff, #7a5cff);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  padding: 12px 25px;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.btn-new-letter:hover {
+  background: linear-gradient(135deg, #7a5cff, #5c3dbf);
+  transform: translateY(-2px);
+}
+
+.letters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.letter-card {
+  background: linear-gradient(135deg, #fff, #f0eaff);
+  padding: 25px 20px;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(95, 59, 204, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.letter-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(95, 59, 204, 0.25);
+}
+
+.letter-icon {
+  font-size: 3rem;
+  color: #7a5cff;
+  margin-bottom: 15px;
+}
+
+.letter-subject {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.letter-status, .letter-date {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.btn-view-letter {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: #7a5cff;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-view-letter:hover {
+  background: #5c3dbf;
+  transform: translateY(-2px);
+}
+
+.no-letters {
+  font-size: 1.1rem;
+  color: #777;
+  margin-top: 30px;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .letters-title { font-size: 2rem; }
+  .letter-card { padding: 20px 15px; }
+}
+
+@media (max-width: 480px) {
+  .letters-grid { grid-template-columns: 1fr; gap: 20px; }
+  .btn-new-letter { width: 100%; text-align: center; }
+}

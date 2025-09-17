@@ -1,34 +1,29 @@
-/* Sign Up / Form Page Styles */
+/* --- Sign Up Page Styles --- */
 
-/* --- Page Layout --- */
+/* --- Page Header --- */
 .page-header {
   text-align: center;
   margin: 30px 0 20px;
 }
 
 .page-header h1 {
-  font-family: 'Georgia', serif;
-  font-size: 2.3em; /* bigger heading */
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.4em;
+  font-weight: 600;
   color: #333;
   margin-bottom: 15px;
 }
 
-/* Optional header image */
-.page-header img {
-  width: 100px;
-  max-width: 150px;
-  margin-top: 10px;
-}
-
 /* --- Form Container --- */
 form.form-container {
-  max-width: 600px; /* increased from 450px */
+  max-width: 600px;
   margin: 0 auto 50px auto;
-  padding: 40px 50px; /* more padding for bigger look */
-  background-color: #ffffffcc; /* semi-transparent white */
+  padding: 40px 50px;
+  background-color: #ffffffcc;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Roboto', sans-serif;
 }
 
 form.form-container:hover {
@@ -42,23 +37,32 @@ form.form-container:hover {
   font-weight: 500;
   text-align: center;
   margin-bottom: 15px;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* --- Table / Inputs --- */
+/* --- Inputs & Labels --- */
 form.form-container table {
   width: 100%;
   border-collapse: collapse;
+}
+
+form.form-container td {
+  padding: 8px 0;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: #444;
 }
 
 form.form-container input,
 form.form-container select,
 form.form-container textarea {
   width: 100%;
-  padding: 14px 18px; /* slightly bigger padding */
+  padding: 14px 18px;
   margin-bottom: 18px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 1.05em; /* slightly bigger font */
+  font-size: 1.05em;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
 }
 
@@ -79,6 +83,8 @@ form.form-container .btn.submit {
   background: #a88fff;
   color: #fff;
   font-size: 1.15em;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -88,23 +94,47 @@ form.form-container .btn.submit:hover {
   transform: translateY(-2px);
 }
 
-/* --- Paragraphs / Links --- */
+/* --- Links --- */
 form.form-container p {
   text-align: center;
   font-size: 0.95em;
   color: #555;
+  font-family: 'Roboto', sans-serif;
 }
 
 form.form-container p a {
   color: #a88fff;
   text-decoration: none;
   font-weight: 500;
+  font-family: 'Poppins', sans-serif;
   transition: color 0.3s ease;
 }
 
 form.form-container p a:hover {
   color: #7a5cff;
   text-decoration: underline;
+}
+
+/* --- Calendar Icon --- */
+.input-with-icon {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding-right: 30px;
+}
+
+.input-with-icon .calendar-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 18px;
+  color: #888;
 }
 
 /* --- Responsive --- */
@@ -122,32 +152,4 @@ form.form-container p a:hover {
   form.form-container {
     padding: 50px 70px;
   }
-}
-
-/* --- Calendar Icon --- */
-.datepicker-icon {
-  background: url("{% static 'images/calendar-icon.svg' %}") no-repeat right 10px center;
-  background-size: 20px 20px;
-  padding-right: 30px; /* make room for the icon */
-  cursor: pointer;
-}
-
-.input-with-icon {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.input-with-icon input {
-  width: 100%;
-  padding-right: 30px; /* space for icon */
-}
-
-.input-with-icon .calendar-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none; /* allow clicking input */
-  font-size: 18px;
 }

@@ -1,4 +1,4 @@
-/* Home/Login Page Styles */
+/* --- Home/Login Page Styles --- */
 
 /* --- Section / Centering --- */
 section {
@@ -8,17 +8,18 @@ section {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: linear-gradient(135deg, #fdf6f0, #fff9f5);
+  background: #f4f0fa; /* unified pastel background to match dashboard */
+  font-family: 'Roboto', sans-serif;
 }
 
 /* --- Login Form --- */
 form.login {
   background-color: #ffffffcc; /* semi-transparent white */
-  padding: 30px 40px;
+  padding: 40px 50px;
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -28,11 +29,13 @@ form.login:hover {
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
 }
 
+/* --- Form Title --- */
 form.login h1 {
-  font-family: 'Georgia', serif;
-  font-size: 2em;
-  margin-bottom: 20px;
-  color: #333;
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.4em;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #5f3bcc; /* match dashboard title color for consistency */
 }
 
 /* --- Form Inputs --- */
@@ -40,35 +43,38 @@ form.login input[type="text"],
 form.login input[type="password"],
 form.login input[type="email"] {
   width: 100%;
-  padding: 12px 15px;
-  margin-bottom: 15px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  font-size: 1em;
+  font-size: 1.05em;
+  font-family: 'Roboto', sans-serif;
   transition: all 0.3s ease;
 }
 
 form.login input:focus {
-  border-color: #a88fff;
-  box-shadow: 0 0 5px rgba(168, 143, 255, 0.5);
+  border-color: #7a5cff;
+  box-shadow: 0 0 5px rgba(122, 92, 255, 0.3);
   outline: none;
 }
 
-/* --- Buttons --- */
+/* --- Submit Button --- */
 form.login .btn.submit {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   border: none;
   border-radius: 8px;
-  background: #a88fff;
+  background: #7a5cff; /* match card color */
   color: #fff;
-  font-size: 1.1em;
+  font-size: 1.15em;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 form.login .btn.submit:hover {
-  background: #7a5cff;
+  background: #6a4fe0; /* match card hover shade */
   transform: translateY(-2px);
 }
 
@@ -77,28 +83,30 @@ section p {
   margin-top: 10px;
   font-size: 0.95em;
   color: #555;
+  font-family: 'Roboto', sans-serif;
 }
 
 section p a {
-  color: #a88fff;
+  color: #7a5cff;
   text-decoration: none;
   font-weight: 500;
+  font-family: 'Poppins', sans-serif;
   transition: color 0.3s ease;
 }
 
 section p a:hover {
-  color: #7a5cff;
+  color: #6a4fe0;
   text-decoration: underline;
 }
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
   form.login {
-    padding: 25px 20px;
+    padding: 35px 30px;
   }
 
   form.login h1 {
-    font-size: 1.8em;
+    font-size: 2em;
   }
 
   section {
@@ -108,6 +116,6 @@ section p a:hover {
 
 @media (min-width: 1440px) {
   form.login {
-    padding: 40px 60px;
+    padding: 50px 70px;
   }
 }

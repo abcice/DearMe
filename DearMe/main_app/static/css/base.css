@@ -1,108 +1,175 @@
-/* Base CSS for DearMe */
-
-/* --- Reset some defaults --- */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* --- Global Styles --- */
 body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  background: #f9f7f6; /* soft warm background */
-  color: #222; /* high contrast text */
-  min-height: 100vh;
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #f4f0fa; /* unified subtle pastel background */
+  color: #333;
+  transition: background 0.4s ease;
 }
 
-/* --- Header / Navbar --- */
+/* --- Header --- */
 header {
-  width: 100%;
-  height: 60px; /* thin navbar */
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #ddd;
-  position: relative; /* stays in place, not fixed on scroll */
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #ffffffcc; /* slightly translucent navbar */
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(5px);
+  position: sticky;
+  top: 0;
   z-index: 1000;
 }
 
 .header-logo-container img {
-  height: 40px;
+  height: 50px;
   width: auto;
 }
 
+/* --- Navigation --- */
 nav ul {
   list-style: none;
   display: flex;
-  gap: 20px;
+  gap: 25px;
+  margin: 0;
+  padding: 0;
+  align-items: center;
 }
 
 nav ul li a,
 nav ul li button {
-  text-decoration: none;
-  color: #222;
+  font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
+  font-size: 1em;
+  color: #333;
+  text-decoration: none;
   background: none;
   border: none;
   cursor: pointer;
+  padding: 5px 0;
+  transition: color 0.3s ease;
 }
 
 nav ul li a:hover,
 nav ul li button:hover {
-  background-color: #f0f0f0;
+  color: #7a5cff; /* subtle highlight on hover */
 }
 
-nav ul li button {
-  font-family: inherit;
-}
-
-/* --- Main content --- */
+/* --- Main Section --- */
 main {
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 0 15px;
+  padding: 40px 20px;
 }
 
-/* --- Responsive design --- */
-@media (max-width: 768px) {
-  header {
-    flex-direction: column;
-    height: auto;
-    padding: 10px 15px;
-  }
+/* --- Dashboard Section --- */
+section.dashboard-section {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 20px;
+  background: #f4f0fa; /* same as body for consistency */
+}
 
-  nav ul {
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    text-align: center;
-  }
+/* Dashboard Title */
+.dashboard-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.6rem;
+  font-weight: 700;
+  color: #5f3bcc; /* subtle, not flashy */
+  margin-bottom: 40px;
+  text-align: center;
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(95, 59, 204, 0.3); /* gentle glow */
+}
 
-  nav ul li a,
-  nav ul li button {
-    display: block;
-    width: 100%;
-  }
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  width: 100%;
+  max-width: 600px;
+}
 
-  .header-logo-container img {
-    margin-bottom: 10px;
+/* Dashboard Card */
+.dashboard-card {
+  position: relative;
+  padding: 30px 20px;
+  border-radius: 14px;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Fredoka', sans-serif;
+  color: #fff;
+  background: #7a5cff; /* softer card color */
+  box-shadow: 0 6px 20px rgba(122, 92, 255, 0.25);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+/* Hover Effects */
+.dashboard-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  background: #6a4fe0; /* subtle hover shade */
+  box-shadow: 0 10px 25px rgba(106, 79, 224, 0.35);
+}
+
+/* Card Icon */
+.dashboard-card .card-icon {
+  font-size: 2.6rem;
+  margin-bottom: 18px;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+/* Card Title & Text */
+.dashboard-card .card-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.dashboard-card .card-text {
+  font-family: 'Roboto', sans-serif;
+  font-size: 0.95rem;
+  color: #e6dfff;
+  line-height: 1.4;
+}
+
+/* Ripple Effect */
+.dashboard-card .ripple {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple-animation 0.6s linear;
+  pointer-events: none;
+  width: 90px;
+  height: 90px;
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
   }
 }
 
-@media (min-width: 1440px) {
-  main {
-    padding: 0 50px;
-  }
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .dashboard-title { font-size: 2.2rem; }
+  .dashboard-card { padding: 25px 18px; }
+  .dashboard-grid { grid-template-columns: 1fr 1fr; gap: 20px; max-width: 500px; }
 }
 
-/* --- Optional: subtle shadow for navbar --- */
-header {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+@media (max-width: 600px) {
+  .dashboard-title { font-size: 1.9rem; }
+  .dashboard-card { padding: 22px 15px; }
+  .dashboard-grid { grid-template-columns: 1fr; gap: 20px; max-width: 300px; }
 }

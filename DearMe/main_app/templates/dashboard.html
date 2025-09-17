@@ -1,23 +1,42 @@
 {% extends "base.html" %}
 {% load static %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}" />
 
 {% block content %}
-<h1>Dashboard</h1>
-<div class="dashboard-container">
-  {% for feature in features %}
-  <a href="{% url feature.url_name %}" class="dashboard-card">
-    <div>
-      <h3>
-        {% if feature.title == "I'm Sad" %}
-            😢 {{ feature.title }}
-        {% else %}
-            {{ feature.title }}
-        {% endif %}
-      </h3>
-      <p>{{ feature.description }}</p>
+<div class="container my-5">
+  <section class="dashboard-section">
+    <h1 class="dashboard-title">Welcome to Your Dashboard</h1>
+    <div class="dashboard-grid">
+      {% for feature in features %}
+      <button class="dashboard-card" data-url="{% url feature.url_name %}">
+        <div class="card-icon">
+          {% if feature.title == "Letters" %}<i class="fa-solid fa-envelope"></i>
+          {% elif feature.title == "Memories" %}<i class="fa-solid fa-image"></i>
+          {% elif feature.title == "Daily Diary" %}<i class="fa-solid fa-book-open"></i>
+          {% elif feature.title == "I'm Sad" %}<i class="fa-solid fa-theater-masks"></i>
+          {% else %}<i class="fa-solid fa-star"></i>{% endif %}
+        </div>
+        <h5 class="card-title">{{ feature.title }}</h5>
+        <p class="card-text">{{ feature.description }}</p>
+        <span class="ripple"></span>
+      </button>
+      {% endfor %}
     </div>
-  </a>
-  {% endfor %}
+  </section>
 </div>
+<script>
+  // Select all dashboard cards
+  const cards = document.querySelectorAll('.dashboard-card');
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      const url = card.getAttribute('data-url');
+      if (url) {
+        window.location.href = url;
+      }
+    });
+  });
+</script>
+
 
 {% endblock %}
