@@ -80,7 +80,7 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
 class ProfileForm(forms.ModelForm):
     birthday = forms.DateField(
         required=False,
-        widget=forms.DateInput(attrs={"type": "date"})
+        widget=forms.DateInput(attrs={"type": "text", "class": "form-control datepicker-icon"})
     )
     profile_picture = forms.ImageField(required=False)
     first_name = forms.CharField(required=False)

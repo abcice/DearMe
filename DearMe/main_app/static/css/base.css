@@ -1,345 +1,108 @@
-/* --- Reset & Base --- */
+/* Base CSS for DearMe */
+
+/* --- Reset some defaults --- */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    background: linear-gradient(to bottom right, #f0f4f8, #e2e8f0);
-    color: #333;
-    line-height: 1.6;
-    min-height: 100vh;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  background: #f9f7f6; /* soft warm background */
+  color: #222; /* high contrast text */
+  min-height: 100vh;
 }
 
 /* --- Header / Navbar --- */
 header {
-    background-color: #fff;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-    padding: 6px 20px; /* thinner */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+  width: 100%;
+  height: 60px; /* thin navbar */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #ddd;
+  position: relative; /* stays in place, not fixed on scroll */
+  z-index: 1000;
 }
 
 .header-logo-container img {
-    height: 40px; /* smaller logo */
-    transition: transform 0.3s ease;
-}
-
-.header-logo-container img:hover {
-    transform: scale(1.05);
+  height: 40px;
+  width: auto;
 }
 
 nav ul {
-    display: flex;
-    list-style: none;
-    gap: 12px;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-}
-
-nav a,
-#logout-form button {
-    text-decoration: none;
-    background: none;
-    border: none;
-    color: #1e3a8a;
-    font-weight: 500;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 0.95rem;
-}
-
-nav a:hover,
-#logout-form button:hover {
-    background-color: #2563eb;
-    color: #fff;
-}
-
-/* --- Buttons --- */
-.btn {
-    padding: 8px 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn.submit {
-    background-color: #2563eb;
-    color: #fff;
-}
-.btn.submit:hover { background-color: #1e40af; }
-
-.btn.edit-btn {
-    background-color: #10b981;
-    color: #fff;
-}
-.btn.edit-btn:hover { background-color: #047857; }
-
-.btn.delete-btn {
-    background-color: #ef4444;
-    color: #fff;
-}
-.btn.delete-btn:hover { background-color: #b91c1c; }
-
-/* --- Main Layout --- */
-main {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 15px;
-}
-
-/* --- Headings --- */
-h1, h2, h3 {
-    color: #1e3a8a;
-    margin-bottom: 15px;
-}
-h1 { text-align: center; margin-bottom: 30px; }
-
-/* --- Forms --- */
-form {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
-    max-width: 500px;
-    margin: 20px auto;
-}
-
-input, select, textarea {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    transition: border-color 0.3s ease;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-    border-color: #2563eb;
-    outline: none;
-}
-
-/* --- Dashboard --- */
-.dashboard-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 25px;
-    margin-top: 30px;
-}
-
-.dashboard-card {
-    display: block;
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    text-decoration: none;
-    color: #1e3a8a;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-}
-
-.dashboard-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    background-color: #f3f4f6;
-}
-
-.dashboard-card h3 {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-}
-
-.dashboard-card p {
-    font-size: 0.95rem;
-    color: #374151;
-}
-
-/* --- Profile Page --- */
-.profile-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-    justify-content: center;
-}
-
-.profile-picture {
-    text-align: center;
-}
-
-.profile-pic {
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border: 3px solid #2563eb;
-    transition: transform 0.3s ease;
-}
-.profile-pic:hover { transform: scale(1.05); }
-
-/* --- Lists --- */
-ul { list-style: none; padding-left: 0; }
-
-li {
-    background: #fff;
-    margin-bottom: 10px;
-    padding: 12px 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    transition: transform 0.2s ease;
-}
-li:hover { transform: translateY(-3px); }
-
-/* --- Links --- */
-a { color: #2563eb; text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-/* --- Responsive --- */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    nav ul {
-        flex-direction: column;
-        gap: 10px;
-        width: 100%;
-    }
-
-    nav a,
-    #logout-form button {
-        width: 100%;
-        text-align: center;
-    }
-}
-
-/* --- Diary --- */
-.diary-container {
-  max-width: 800px;
-  margin: 30px auto;
-  text-align: center;
-}
-
-.new-entry-btn {
-  display: inline-block;
-  margin-bottom: 20px;
-  background: #2563eb;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background 0.3s;
-}
-
-.new-entry-btn:hover {
-  background: #1e40af;
-}
-
-.diary-list {
-  display: grid;
+  list-style: none;
+  display: flex;
   gap: 20px;
 }
 
-.diary-card {
-  background: #fffef5;
-  border: 2px solid #d4b483;
-  border-radius: 10px;
-  padding: 15px;
-  text-align: left;
-  box-shadow: 2px 2px 12px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease;
-  font-family: "Georgia", serif;
+nav ul li a,
+nav ul li button {
+  text-decoration: none;
+  color: #222;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-.diary-card:hover {
-  transform: translateY(-4px);
+nav ul li a:hover,
+nav ul li button:hover {
+  background-color: #f0f0f0;
 }
 
-.diary-card h3 {
-  margin-bottom: 8px;
-  color: #8b5e34;
+nav ul li button {
+  font-family: inherit;
 }
 
-.diary-page {
-  max-width: 800px;
-  margin: 30px auto;
-  background: #fffef5;
-  padding: 30px;
-  border: 2px solid #d4b483;
-  border-radius: 12px;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
-  font-family: "Georgia", serif;
-  line-height: 1.8;
+/* --- Main content --- */
+main {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 15px;
 }
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+/* --- Responsive design --- */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    height: auto;
+    padding: 10px 15px;
+  }
 
-.page-content img.diary-media {
-  max-width: 100%;
-  border-radius: 8px;
-  margin-top: 15px;
-}
+  nav ul {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    text-align: center;
+  }
 
-.page-content audio {
-  display: block;
-  margin-top: 15px;
-}
-
-.diary-form-container {
-  max-width: 600px;
-  margin: 30px auto;
-  background: #fffef5;
-  padding: 25px;
-  border: 2px solid #d4b483;
-  border-radius: 12px;
-  box-shadow: inset 0 0 6px rgba(0,0,0,0.08);
-}
-
-.confirm-delete {
-  max-width: 600px;
-  margin: 40px auto;
-  text-align: center;
-}
-/* Fixed size for diary and memory images */
-.diary-media,
-.memory-frame img,
-.memory-card img,
-.preview-card img {
-    width: 250px;      /* or your preferred fixed width */
-    height: 200px;     /* fixed height */
-    object-fit: cover; /* crops image to fill box without distortion */
-    border-radius: 8px; /* optional: rounded corners */
+  nav ul li a,
+  nav ul li button {
     display: block;
-    margin: 0 auto;    /* center the image */
+    width: 100%;
+  }
+
+  .header-logo-container img {
+    margin-bottom: 10px;
+  }
 }
 
-/* Optional: make the gallery responsive */
-.memory-gallery,
-.preview-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
+@media (min-width: 1440px) {
+  main {
+    padding: 0 50px;
+  }
 }
 
-.memory-frame,
-.preview-card {
-    flex: 0 0 auto;
+/* --- Optional: subtle shadow for navbar --- */
+header {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }

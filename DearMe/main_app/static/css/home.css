@@ -1,13 +1,113 @@
-.login p {
-    margin-top: 1em;
-    font-size: 0.9em;
+/* Home/Login Page Styles */
+
+/* --- Section / Centering --- */
+section {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #fdf6f0, #fff9f5);
 }
 
-.login a {
-    color: #007bff;
-    text-decoration: none;
+/* --- Login Form --- */
+form.login {
+  background-color: #ffffffcc; /* semi-transparent white */
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.login a:hover {
-    text-decoration: underline;
+form.login:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+form.login h1 {
+  font-family: 'Georgia', serif;
+  font-size: 2em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* --- Form Inputs --- */
+form.login input[type="text"],
+form.login input[type="password"],
+form.login input[type="email"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1em;
+  transition: all 0.3s ease;
+}
+
+form.login input:focus {
+  border-color: #a88fff;
+  box-shadow: 0 0 5px rgba(168, 143, 255, 0.5);
+  outline: none;
+}
+
+/* --- Buttons --- */
+form.login .btn.submit {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #a88fff;
+  color: #fff;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+form.login .btn.submit:hover {
+  background: #7a5cff;
+  transform: translateY(-2px);
+}
+
+/* --- Paragraphs / Links --- */
+section p {
+  margin-top: 10px;
+  font-size: 0.95em;
+  color: #555;
+}
+
+section p a {
+  color: #a88fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+section p a:hover {
+  color: #7a5cff;
+  text-decoration: underline;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  form.login {
+    padding: 25px 20px;
+  }
+
+  form.login h1 {
+    font-size: 1.8em;
+  }
+
+  section {
+    padding: 15px;
+  }
+}
+
+@media (min-width: 1440px) {
+  form.login {
+    padding: 40px 60px;
+  }
 }
