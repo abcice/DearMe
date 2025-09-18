@@ -455,3 +455,134 @@
   font-style: italic;
   color: #888;
 }
+
+/* --- Modal (DaisyUI-like design) --- */
+.modal {
+  padding: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.5); /* semi-dark backdrop */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-box {
+  background: #ffffff;
+  border-radius: 1rem; /* rounded-xl */
+  padding: 1.5rem;
+  max-width: 48rem; /* matches w-11/12 max-w-5xl */
+  width: 90%;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  overflow-y: auto;
+  max-height: 90vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+.modal-box h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #5f3bcc;
+  text-align: center;
+  margin-bottom: 1.25rem;
+}
+
+.modal-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+  gap: 1rem;
+}
+
+/* --- Card list inside modal --- */
+.memory-list,
+.diary-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+/* --- Cards --- */
+.card {
+  background: #ffffff;
+  border-radius: 0.75rem; /* rounded-lg */
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+.card img {
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+  object-fit: cover;
+  width: 100%;
+  height: 140px;
+}
+
+.card-body {
+  padding: 0.75rem;
+}
+
+.card-body h4 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.card-body p {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+/* --- Attach buttons --- */
+.attach-memory,
+.attach-diary,
+.modal-action .btn {
+  background: linear-gradient(135deg, #a88fff, #7a5cff);
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.75rem; /* rounded-lg */
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.attach-memory:hover,
+.attach-diary:hover,
+.modal-action .btn:hover {
+  background: linear-gradient(135deg, #7a5cff, #5c3dbf);
+  transform: translateY(-2px);
+}
+/* Dialog backdrop */
+.modal::backdrop {
+  background: rgba(0,0,0,0.5);
+}
+
+/* Remove default dialog border/padding */
+.modal {
+  border: none;
+  padding: 0;
+}
+
+/* Optional: center modal content */
+.modal-box {
+  max-height: 90vh;
+  overflow-y: auto;
+}
