@@ -111,7 +111,10 @@ class ProfileForm(forms.ModelForm):
         required=False,
         widget=forms.DateInput(attrs={"type": "text", "class": "form-control datepicker-icon"})
     )
-    profile_picture = forms.ImageField(required=False)
+    profile_picture = forms.ImageField(
+        required=False,
+        widget=forms.ClearableFileInput(attrs={'style': 'display:none;'})  
+    )
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
     hide_name = forms.BooleanField(required=False, label="Hide my name")

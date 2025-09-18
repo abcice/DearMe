@@ -15,19 +15,18 @@
 
         <!-- Profile Picture -->
         <div class="profile-picture">
-            {% if user_obj.profile_picture %}
-                <label for="id_profile_picture">
+            <label for="id_profile_picture">
+                {% if user_obj.profile_picture %}
                     <img src="{{ user_obj.profile_picture.url }}" alt="Profile Picture" class="profile-pic"/>
                     <p>Click to change</p>
-                </label>
-            {% else %}
-                <label for="id_profile_picture">
+                {% else %}
                     <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="profile-pic"/>
                     <p>Click to upload</p>
-                </label>
-            {% endif %}
-            {{ form.profile_picture }}
+                {% endif %}
+            </label>
+            {{ form.profile_picture }} <!-- hidden input still here -->
         </div>
+
 
         <!-- Profile Fields -->
         <div class="form-fields">
