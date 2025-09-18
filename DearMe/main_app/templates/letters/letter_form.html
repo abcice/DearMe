@@ -4,6 +4,10 @@
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/letters/letter_form.css' %}" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+<!-- Select2 -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -21,6 +25,21 @@
       {{ form.subject }}
     </div>
 
+    <!-- Receivers -->
+    <div class="form-group">
+      {{ form.receivers.label_tag }}
+      {{ form.receivers }}
+    </div>
+
+    <!-- External Emails -->
+    <div class="form-group">
+      <label for="external-emails-input">External Emails</label>
+      <div id="email-chip-container" class="email-chip-container">
+        <input type="text" id="external-emails-input" placeholder="Type an email and press Enter or comma" />
+      </div>
+      <input type="hidden" name="external_emails" id="external-emails-hidden" />
+    </div>
+
     <!-- Body with Toolbar -->
     <div class="form-group">
       <label for="id_body">Body</label>
@@ -31,8 +50,8 @@
           <option value="18px">Large</option>
           <option value="20px">Extra Large</option>
         </select>
-        <button type="button" id="bold-btn"><b>B</b></button>
-        <button type="button" id="italic-btn"><i>I</i></button>
+        <button type="button" id="bold-btn" class="btn-toolbar">B</button>
+        <button type="button" id="italic-btn" class="btn-toolbar">I</button>
       </div>
       {{ form.body }}
     </div>
@@ -51,27 +70,25 @@
         <span class="file-button">Choose File</span>
       </div>
       <div id="attachment-preview" class="file-preview"></div>
+      <button type="button" id="remove-attachment" class="btn-cancel" style="display:none;">Remove Attachment</button>
     </div>
 
-    <!-- Receivers -->
+    <!-- Memories -->
     <div class="form-group">
-      {{ form.receivers.label_tag }}
-      {{ form.receivers }}
+      <label>Attach Memories</label>
+      <button type="button" class="btn-submit" id="openMemoriesModal">📌 Import Memories</button>
+      <div id="memories-preview" class="selected-preview"></div>
+      <input type="hidden" name="selected_memories" id="selected-memories-hidden" />
     </div>
 
-    <!-- External Emails -->
+    <!-- Diaries -->
     <div class="form-group">
-      {{ form.external_emails.label_tag }}
-      {{ form.external_emails }}
+      <label>Attach Diary Entries</label>
+      <button type="button" class="btn-submit" id="openDiariesModal">📌 Import Diaries</button>
+      <div id="diaries-preview" class="selected-preview"></div>
+      <input type="hidden" name="selected_diaries" id="selected-diaries-hidden" />
     </div>
 
-    <!-- Grace Period -->
-    <div class="form-group">
-      {{ form.grace_period_hours.label_tag }}
-      {{ form.grace_period_hours }}
-    </div>
-
-    <!-- Buttons -->
     <div class="form-buttons">
       <button type="submit" class="btn-submit">Save Letter</button>
       <a href="{% url 'letter_list' %}" class="btn-cancel">Cancel</a>
@@ -79,14 +96,71 @@
   </form>
 </div>
 
+
+<!-- Memories Modal -->
+<dialog id="memoriesModal" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl rounded-2xl p-6">
+    <h3 class="font-bold text-lg text-center">Select Memories</h3>
+    <div class="memory-list mt-4 max-h-96 overflow-y-auto grid grid-cols-2 md:grid-cols-3 gap-4">
+      {% for memory in user.memories.all %}
+      <div class="card bg-base-100 shadow-md memory-item" data-id="{{ memory.id }}">
+        {% if memory.photo %}
+        <img src="{{ memory.photo.url }}" alt="{{ memory.title }}" class="rounded-t-md h-28 w-full object-cover" />
+        {% endif %}
+        <div class="card-body">
+          <h4 class="font-semibold">{{ memory.title }}</h4>
+          <p class="text-sm">{{ memory.description|truncatewords:10 }}</p>
+          <button type="button" class="btn btn-xs btn-accent attach-memory">Attach</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+
+<!-- Diaries Modal -->
+<dialog id="diariesModal" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl rounded-2xl p-6">
+    <h3 class="font-bold text-lg text-center">Select Diaries</h3>
+    <div class="diary-list mt-4 max-h-96 overflow-y-auto grid grid-cols-2 md:grid-cols-3 gap-4">
+      {% for diary in user.diary_entries.all %}
+      <div class="card bg-base-100 shadow-md diary-item" data-id="{{ diary.id }}">
+        <div class="card-body">
+          <h4 class="font-semibold">Diary {{ diary.entry_date }}</h4>
+          <button type="button" class="btn btn-xs btn-accent attach-diary">Attach</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn">Close</button>
+      </form>
+    </div>
+  </div>
+</dialog>
+
+
 <script>
 $(function(){
-  // FONT SIZE
+
+  // Select2
+  $('select[name="receivers"]').select2({
+    placeholder: "Select receivers",
+    width: '100%',
+    closeOnSelect: false
+  });
+
+  // Textarea formatting
   $('#font-size-selector').on('change', function(){
     $('textarea[name="body"]').css('font-size', $(this).val());
   });
-
-  // BOLD & ITALIC
   $('#bold-btn').on('click', function(){
     const textarea = $('textarea[name="body"]');
     textarea.val('**' + textarea.val() + '**');
@@ -96,26 +170,104 @@ $(function(){
     textarea.val('*' + textarea.val() + '*');
   });
 
-  // ATTACHMENT PREVIEW
+  // Attachment preview
   const attachmentInput = $('input[name="attachment"]');
   const preview = $('#attachment-preview');
+  const removeBtn = $('#remove-attachment');
 
-  attachmentInput.on('change', function(){
+  function updateAttachmentPreview() {
     preview.empty();
-    const file = this.files[0];
-    if(!file) return;
-
+    const file = attachmentInput[0].files[0];
+    if(!file){ removeBtn.hide(); return; }
     const ext = file.name.split('.').pop().toLowerCase();
     if(['jpg','jpeg','png','gif'].includes(ext)){
-      const img = $('<img>').attr('src', URL.createObjectURL(file));
-      preview.append(img);
+      preview.append($('<img>').attr('src', URL.createObjectURL(file)));
     } else if(['mp3','wav','ogg'].includes(ext)){
-      const audio = $('<audio controls>').attr('src', URL.createObjectURL(file));
-      preview.append(audio);
+      preview.append($('<audio controls>').attr('src', URL.createObjectURL(file)));
     } else {
       preview.text('File selected: ' + file.name);
     }
+    removeBtn.show();
+  }
+  attachmentInput.on('change', updateAttachmentPreview);
+  removeBtn.on('click', function(){
+    attachmentInput.val('');
+    updateAttachmentPreview();
   });
+
+  // External emails chips
+  const emails = [];
+  function addEmail(val){
+    val = val.trim();
+    if(val && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) && !emails.includes(val)){
+      emails.push(val);
+      $('#email-chip-container').append('<span class="email-chip">'+val+'<span class="remove-chip">×</span></span>');
+      $('#external-emails-hidden').val(emails.join(','));
+    }
+  }
+  $('#external-emails-input').on('input', function(){
+    const val = $(this).val();
+    if(val.includes(',') || val.includes(' ')){
+      val.split(/[\s,]+/).forEach(v => addEmail(v));
+      $(this).val('');
+    }
+  });
+  $('#external-emails-input').on('keydown', function(e){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      addEmail($(this).val());
+      $(this).val('');
+    }
+  });
+  $('#email-chip-container').on('click', '.remove-chip', function(){
+    const val = $(this).parent().text().slice(0,-1);
+    emails.splice(emails.indexOf(val), 1);
+    $(this).parent().remove();
+    $('#external-emails-hidden').val(emails.join(','));
+  });
+
+  // Modals
+  function setupModal(openBtnId, modalId){
+    const modal = $(modalId)[0];
+    $(openBtnId).on('click', () => modal.showModal());
+    $(modalId).find('.close-modal').on('click', () => modal.close());
+  }
+  setupModal('#openMemoriesModal', '#memoriesModal');
+  setupModal('#openDiariesModal', '#diariesModal');
+
+  // Add stickers
+  function addSticker(container, id, text, input){
+    if(container.find(`.sticker[data-id='${id}']`).length) return;
+    const card = $('<div>').addClass('sticker').attr('data-id', id).text(text);
+    const removeBtn = $('<button>').text('×').addClass('remove-sticker btn-cancel');
+    removeBtn.on('click', function(){
+      card.remove();
+      input.val(container.find('.sticker').map((i, el)=>$(el).data('id')).get().join(','));
+    });
+    card.append(removeBtn);
+    container.append(card);
+    input.val(container.find('.sticker').map((i, el)=>$(el).data('id')).get().join(','));
+  }
+
+  // Attach memories
+  $('.attach-memory').on('click', function(){
+    const parent = $(this).closest('.memory-item');
+    addSticker($('#memories-preview'), parent.data('id'), parent.find('h4').text(), $('#selected-memories-hidden'));
+  });
+
+  // Attach diaries
+  $('.attach-diary').on('click', function(){
+    const parent = $(this).closest('.diary-item');
+    addSticker($('#diaries-preview'), parent.data('id'), parent.find('h4').text(), $('#selected-diaries-hidden'));
+  });
+
 });
+function setupModal(openBtnId, modalId){
+  const modal = document.querySelector(modalId);
+  document.querySelector(openBtnId).addEventListener("click", () => modal.showModal());
+}
+setupModal('#openMemoriesModal', '#memoriesModal');
+setupModal('#openDiariesModal', '#diariesModal');
+
 </script>
 {% endblock %}
