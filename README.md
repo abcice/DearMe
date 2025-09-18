@@ -87,6 +87,14 @@ A **Future Diary app** that allows users to:
 - **Encryption:** Django encrypted fields for diary entries  
 - **API (optional):** Django REST Framework  
 
+### Libraries / Frontend Tools Used
+- **Flatpickr** – date/time picker (`https://cdn.jsdelivr.net/npm/flatpickr`)  
+- **jQuery** – DOM manipulation (`https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js`)  
+- **Tailwind CSS & DaisyUI** – styling and UI components (`https://cdn.tailwindcss.com`, `https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.css`)  
+- **Google Fonts** – Poppins, Roboto, Fredoka (`https://fonts.googleapis.com`)  
+- **Font Awesome** – icons (`https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css`)  
+- **LightGallery** – media gallery with zoom (`https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js`)  
+
 ---
 
 ## 🚀 Next Steps (Stretch Goals)  
@@ -103,15 +111,16 @@ A **Future Diary app** that allows users to:
 ---
 
 ## 📸 Screenshot / Logo  
-
-*(To be added after first prototype is built)*  
-
+![DearMe App Logo](DearMe/main_app/static/logo.png)
+[Dashboard](DearMe/main_app/static/images/Dashboard.PNG) 
+[Letters](DearMe/main_app/static/images/Letters.PNG)  
 ---
 
 ## 🙌 Attributions  
 
 - Django, Celery, Redis, DRF, encrypted-model-fields.  
-- Any external libraries or assets used will be listed here.  
+- Flatpickr, jQuery, Tailwind CSS, DaisyUI, LightGallery, Font Awesome, Google Fonts.  
+- Any additional external libraries or assets used will be listed here.  
 
 ---
 
