@@ -112,8 +112,8 @@ A **Future Diary app** that allows users to:
 
 ## 📸 Screenshot / Logo  
 ![DearMe App Logo](DearMe/main_app/static/logo.png)
-[Dashboard](DearMe/main_app/static/images/Dashboard.PNG) 
-[Letters](DearMe/main_app/static/images/Letters.PNG)  
+![Dashboard](DearMe/main_app/static/images/Dashboard.PNG) 
+![Letters](DearMe/main_app/static/images/Letters.PNG)  
 ---
 
 ## 🙌 Attributions  
