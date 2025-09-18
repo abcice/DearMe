@@ -5,214 +5,116 @@
 ## ✨ Description  
 
 **DearMe** is a digital time capsule and future diary app that lets you write letters, store memories, and send messages to your future self or loved ones.  
-Whether it’s a personal reflection, a milestone, or a heartfelt note, you decide when it will unlock — days, years, or even decades later.  
+Whether it’s personal reflections, milestones, or heartfelt notes, you decide when they unlock — days, years, or even decades later.  
 
 With encrypted diaries, multimedia attachments, legacy handovers, and surprise flashbacks, DearMe helps you preserve your journey, relive special moments, and leave a lasting legacy for those who matter most.  
 
+---
 
 ## 🎯 Core Concept  
 A **Future Diary app** that allows users to:  
-- Store letters, daily diary entries, media, and personal favorites for themselves or loved ones.  
+- Store letters, daily diary entries, and personal memories.  
 - Unlock memories only at specific times in the future (like a time capsule).  
 - Keep a **private encrypted diary** safe from everyone, even developers.  
-- Share or co-create memories with trusted people.  
+- Share or co-create memories with trusted people (planned feature).  
 - Preserve legacy through posthumous letters.  
-- Experience unique flashbacks and analytics on their life journey.  
+- Experience random flashbacks and mood-based suggestions (“I’m sad” button).  
 
 ---
 
 ## 📝 Core Features  
 
-### 1. Letters & Messages  
-- Write letters to yourself or others.  
-- Choose a future unlock date (stays hidden until then).  
-- “Surprise me” unlock date (random 2–10 years).  
+### ✅ Implemented Features
+- Letters & Messages: Write letters to yourself or others, schedule delivery dates.  
+- Daily Diary (Encrypted): Write secure diary entries with optional favorite music, foods, shows.  
+- Memories: Upload and attach photos, videos, audio, or PDFs.  
+- Tags & Categorization: Add predefined tags, attach to memories.  
+- Locations: Assign locations to memories.  
+- “I’m sad” button: Get random uplifting memories.  
 
-### 2. Media Support  
-- Upload and attach photos, videos, voice letters, PDFs.  
-- Store achievements, milestones, or life events.  
-
-### 3. Daily Diary (Encrypted)  
-- Write daily encrypted diary entries.  
-- Even developers cannot read diary entries.  
-- Diary entries can include:  
-  - Free-form text.  
-  - Favorite music (with optional uploaded MP3).  
-  - Favorite foods (text).  
-  - Favorite anime/TV shows (text + optional links).  
-
-### 4. Tagging & Categorization  
-- Add tags (funny, emotional, travel, achievement, family, etc.).  
-- Custom tags.  
-- Filter/search memories by tags.  
-
-### 5. Timeline & Albums  
-- Chronological view of memories.  
-- Albums with thumbnails.  
-- Travel log: attach country/location → displayed on a map.  
-- Shared timelines for couples, families, or friends.  
-
-### 6. Random Flashbacks  
-- On login, show a random unlocked memory.  
-- “I’m sad” button → happy/motivational memories.  
-
-### 7. Anniversaries  
-- Old letters/photos re-unlock on anniversaries (5, 10+ years).  
-- Example: “Your graduation letter, 10 years later.”  
-
-### 8. Social & Joined Memories  
-- Friend system (send/accept requests).  
-- Share memories via app, email, or SMS.  
-- **Joined memories**: couples/friends co-create memories (wedding anniversary, trips, etc.).  
-- Shared albums/timelines.  
-
-### 9. Notifications & Reminders  
-- In-app notifications for unlock events.  
-- Email reminders (important if app is deleted).  
-- Optional SMS notifications.  
-
-### 10. Privacy & Security  
-- Visibility: private, friends-only, public.  
-- End-to-end encryption for diary entries.  
-- “Grave memories” → private forever, never shared.  
-
-### 11. Posthumous Memories (Legacy Handover)  
-- Assign trusted contacts.  
-- After user’s passing, scheduled letters delivered.  
-- Example: final goodbye or advice letters.  
-
----
-
-## 🌟 Advanced & Unique Features  
-
-1. **Voice Letters** – record and store audio securely.  
-2. **AR Flashbacks (Future Idea)** – overlay old photos in current locations.  
-3. **Memory Bundles** – export as PDF “memory books.”  
-4. **Sentimental Analytics** – mood tracking, word clouds, memory types.  
-5. **Gamification** – badges for writing regularly, uploading media, journaling streaks.  
-
----
-
-## 📊 Example Use Cases  
-
-1. Write a letter to your future self to open in 5 years.  
-2. Keep an encrypted daily diary no one else can ever read.  
-3. Leave a travel diary with photos + locations to relive trips.  
-4. Revisit your favorite anime/music list from years ago.  
-5. Random surprise unlock → system picks one memory.  
-6. Click “I’m sad” → see uplifting memories.  
-7. Spouse/children receive legacy letters after death.  
-8. Visit your childhood home → see AR flashback.  
-9. A couple co-creates a shared anniversary capsule.  
+### ⚡ Future / Planned Features  
+- Joined Memories: Co-create memories with friends or family.  
+- Timeline & Albums: Chronological view, shared albums.  
+- Random Flashbacks on login.  
+- Anniversary unlocks for letters or memories.  
+- Notifications & reminders via email/SMS.  
+- Legacy Contacts & posthumous delivery fully automated.  
+- AR flashbacks (overlay old photos in current location).  
+- Sentimental analytics, gamification, AI-powered insights.  
+- Memory export bundles (PDF memory books).  
 
 ---
 
 ## 📂 Data Structure (Database Plan)  
 
-### User  
-- `id`  
-- `username`  
-- `email`  
-- `password` (hashed)  
-- `profile_pic`  
-- `bio`  
+### Models & Relationships
 
-### DiaryEntry (Encrypted)  
-- `id`  
-- `user_id (FK)`  
-- `date`  
-- `encrypted_content`  
-- `favorite_music` (file or link)  
-- `favorite_food` (text)  
-- `favorite_anime_tv` (text + link)  
+| Model | Relationships |
+|-------|---------------|
+| **CustomUser** | One-to-many → DailyDiary, Memory, Letter (sender); Many-to-many → Letter (receivers) |
+| **Tag** | Many-to-many → Memory |
+| **Location** | One-to-many → Memory, DailyDiary |
+| **Memory** | Many-to-one → owner (CustomUser); Many-to-many → Tag, DailyDiary, Letter; One-to-one optional → media (photo/audio/video) |
+| **DailyDiary** | Many-to-one → owner (CustomUser); Many-to-many → Memory, Location, Letter |
+| **Letter** | Many-to-one → sender (CustomUser); Many-to-many → receivers (CustomUser), Memory, DailyDiary; One-to-one optional → attachment |
 
-### Memory  
-- `id`  
-- `user_id (FK)`  
-- `title`  
-- `content` (encrypted text)  
-- `unlock_date`  
-- `surprise_unlock` (boolean)  
-- `visibility` (private/friends/public)  
-- `location` (optional)  
-- `tags` (many-to-many)  
-
-### Media  
-- `id`  
-- `memory_id (FK)`  
-- `file_type` (photo/video/audio/pdf)  
-- `file_path`  
-
-### JoinedMemory  
-- `id`  
-- `title`  
-- `unlock_date`  
-- `participants` (many-to-many User)  
-
-### LegacyContact  
-- `id`  
-- `user_id (FK)`  
-- `contact_user_id (FK)`  
-- `relationship` (spouse, child, friend)  
-
-### Notifications  
-- `id`  
-- `user_id (FK)`  
-- `type` (unlock, anniversary, reminder)  
-- `status` (sent/pending)  
+**Relationship Types:**  
+- **One-to-one:** Letter → Attachment (optional)  
+- **One-to-many:** User → Memories, DailyDiary entries, Sent Letters  
+- **Many-to-many:** Memories ↔ Tags, Letters ↔ Receivers, Diaries ↔ Memories  
 
 ---
 
 ## 👤 User Stories  
 
-- As a user, I want to write a letter and set a date so that my future self can receive it.  
-- As a user, I want to write a private encrypted diary entry so that no one, not even developers, can read it.  
-- As a user, I want to upload my favorite music, foods, and shows so that I can look back at my changing tastes.  
-- As a user, I want to attach photos, videos, or voice letters to my memories so that they feel more alive.  
-- As a user, I want to tag my memories so that I can easily find them later.  
-- As a user, I want to see my memories on a timeline or map so that I can revisit my life story.  
-- As a user, I want the app to remind me of anniversaries so I can relive old moments.  
-- As a user, I want to create joined memories with my partner so we can unlock them together in the future.  
-- As a user, I want to assign legacy contacts so that my memories can reach loved ones if I pass away.  
-- As a user, I want random flashbacks so that I get surprise doses of nostalgia.  
-- As a user, I want to export my memories as a PDF book so I can keep them offline.  
+- Write a letter to your future self or others.  
+- Keep an encrypted daily diary that only you can read.  
+- Attach photos, videos, or voice notes to memories.  
+- Tag memories for easy search.  
+- Store locations for trips or events.  
+- Use “I’m sad” button for motivational memories.  
+- Future plans: shared timelines, anniversary unlocks, co-created memories, legacy contacts, notifications.  
 
 ---
 
 ## ⚙️ Tech Stack  
 
-- **Backend:** Django + PostgreSQL (or SQLite for local dev).  
-- **Frontend:** Django templates (or optional React).  
-- **Authentication:** Django built-in sessions.  
-- **Storage:** Django file storage (images, audio, video, PDFs).  
-- **Scheduling:** Celery + Redis for delayed unlocks.  
-- **Encryption:** Django cryptography for diary entries.  
-- **API (optional):** Django REST Framework.  
+- **Backend:** Django + PostgreSQL (SQLite for local dev)  
+- **Frontend:** Django templates (React optional)  
+- **Authentication:** Django built-in sessions  
+- **Storage:** Django file storage (images, audio, video, PDFs)  
+- **Scheduling:** Celery + Redis for delayed unlocks  
+- **Encryption:** Django encrypted fields for diary entries  
+- **API (optional):** Django REST Framework  
 
 ---
 
 ## 🚀 Next Steps (Stretch Goals)  
 
-- AI-powered “memory insights” (detect sentiment in diary entries).  
+- Co-created memories with friends/family.  
+- Notifications and reminders for unlocks.  
+- Memory timelines & albums (including shared timelines).  
+- AR flashbacks fully implemented.  
 - Cloud storage integration (AWS S3, GCP).  
 - Mobile app version.  
-- AR flashbacks fully implemented.  
+- AI-powered insights & sentimental analytics.  
+- Gamification & memory export bundles (PDF).  
 
 ---
 
 ## 📸 Screenshot / Logo  
+
 *(To be added after first prototype is built)*  
 
 ---
 
 ## 🙌 Attributions  
-- Django, Celery, Redis, DRF.  
+
+- Django, Celery, Redis, DRF, encrypted-model-fields.  
 - Any external libraries or assets used will be listed here.  
 
 ---
 
-[wireFrame](https://excalidraw.com/#json=eVwD55XHqNuyxwoT7YneB,JFn3m1v8vgdO_t69H1gQgQ)
-
-[trello](https://trello.com/invite/b/68c2b808f32436b85099c94e/ATTI33b6548ef1fd1e644dab4ab32d0af29f8C05B60E/dearme)
-
+[Wireframe](https://excalidraw.com/#json=eVwD55XHqNuyxwoT7YneB,JFn3m1v8vgdO_t69H1gQgQ)  
+[Trello Board](https://trello.com/invite/b/68c2b808f32436b85099c94e/ATTI33b6548ef1fd1e644dab4ab32d0af29f8C05B60E/dearme)  
 [ERD](https://drive.google.com/file/d/1Hx5I5N8FdV6dChbVy_Uwsc6oURAQ7Z3K/view?usp=sharing)
