@@ -287,7 +287,7 @@
   cursor: pointer;
 }
 
-/* --- Modals (cleaned, unified) --- */
+/* --- Modals --- */
 .modal {
   padding: 0;
   border: none;
@@ -296,15 +296,12 @@
 
 .modal-box {
   position: relative;
-
   margin: 0 auto;
   background: #faf7f2;
   box-shadow: 0 12px 30px rgba(0,0,0,0.25);
   font-family: 'Poppins', sans-serif;
   max-height: 90vh;
   overflow-y: auto;
-
-  /* lined paper effect */
   background: repeating-linear-gradient(
     to bottom,
     #faf7f2,
@@ -330,7 +327,7 @@
   gap: 15px;
 }
 
-/* Card list inside modal */
+/* --- Card list inside modal --- */
 .memory-list, .diary-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -394,197 +391,7 @@
 .attach-diary:hover {
   background: #5c3dbf;
 }
-/* --- Container & Form --- */
-.letter-form-container {
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 40px 25px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(95, 59, 204, 0.15);
-  font-family: 'Fredoka', sans-serif;
-}
 
-.letter-form-title {
-  font-family: 'Poppins', sans-serif;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #5f3bcc;
-  text-align: center;
-  margin-bottom: 30px;
-  text-shadow: 0 0 6px rgba(95, 59, 204, 0.2);
-}
-
-.letter-form .form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-.letter-form input,
-.letter-form textarea,
-.letter-form select {
-  padding: 12px 15px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  width: 100%;
-}
-
-.letter-form textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-/* --- Buttons --- */
-.form-buttons {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  margin-top: 25px;
-  flex-wrap: wrap;
-}
-
-.btn-submit {
-  background: linear-gradient(135deg, #a88fff, #7a5cff);
-  color: #fff;
-  font-weight: 600;
-  padding: 12px 30px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-submit:hover {
-  background: linear-gradient(135deg, #7a5cff, #5c3dbf);
-  transform: translateY(-2px);
-}
-
-.btn-cancel {
-  background: #f0eaff;
-  color: #5f3bcc;
-  font-weight: 600;
-  padding: 12px 30px;
-  border-radius: 12px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.btn-cancel:hover {
-  background: #e0d7ff;
-  transform: translateY(-2px);
-}
-
-/* --- Text Toolbar --- */
-.text-toolbar {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-/* --- File Preview --- */
-.file-preview img,
-.file-preview audio {
-  margin-top: 10px;
-  max-width: 200px;
-  max-height: 200px;
-}
-
-/* --- Chips --- */
-.email-chip-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  min-height: 40px;
-}
-
-.email-chip {
-  background: #e0e0e0;
-  padding: 3px 8px;
-  border-radius: 16px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-}
-
-/* --- Modals --- */
-.modal {
-  border: none;
-  background: none;
-}
-
-.modal-box {
-  padding: 30px 40px;
-  border-radius: 18px;
-  max-width: 900px;
-  width: 90%;
-  margin: auto;
-  background: repeating-linear-gradient(to bottom, #faf7f2, #faf7f2 32px, #e4e4e4 33px);
-  border: 2px solid #ddd;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-box h3 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #5f3bcc;
-  text-align: center;
-  margin-bottom: 25px;
-}
-
-.memory-list, .diary-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-}
-
-.card {
-  background: #fffdf7;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.08);
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: rotate(-1deg) scale(1.02);
-  box-shadow: 4px 6px 15px rgba(0,0,0,0.12);
-}
-
-.card img {
-  border-radius: 12px 12px 0 0;
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-}
-
-.card-body {
-  padding: 12px;
-}
-
-.attach-memory,
-.attach-diary {
-  background: #7a5cff;
-  color: #fff;
-  font-size: 0.85rem;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.attach-memory:hover,
-.attach-diary:hover {
-  background: #5c3dbf;
-}
 /* --- Linked Memories Section --- */
 .memories-title {
   font-family: 'Poppins', sans-serif;

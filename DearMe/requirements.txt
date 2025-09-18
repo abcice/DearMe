@@ -13,7 +13,6 @@ click-repl==0.3.0
 colorama==0.4.6
 crispy-bootstrap5==2025.6
 cryptography==46.0.0
-distlib==0.4.0
 dj-database-url==3.0.1
 Django==5.2.6
 django-anymail==13.1
@@ -21,15 +20,11 @@ django-background-tasks==1.2.8
 django-crispy-forms==2.4
 django-crontab==0.7.1
 django-encrypted-model-fields==0.6.5
-filelock==3.19.1
-git-filter-repo==2.47.0
 gunicorn==23.0.0
 idna==3.10
 kombu==5.5.4
 packaging==25.0
 pillow==11.3.0
-pipenv==2025.0.4
-platformdirs==4.4.0
 prompt_toolkit==3.0.52
 psycopg2-binary==2.9.10
 pycparser==2.23
@@ -37,12 +32,10 @@ python-dateutil==2.9.0.post0
 python-decouple==3.8
 redis==6.4.0
 requests==2.32.5
-setuptools==80.9.0
 six==1.17.0
 sqlparse==0.5.3
 tzdata==2025.2
 urllib3==2.5.0
 vine==5.1.0
-virtualenv==20.34.0
 wcwidth==0.2.13
 whitenoise==6.10.0
