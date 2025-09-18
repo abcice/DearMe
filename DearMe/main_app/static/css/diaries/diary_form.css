@@ -2,7 +2,6 @@
 .notebook {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0;
   max-width: 1100px;
   margin: 40px auto;
   border: 2px solid #ddd;
@@ -13,12 +12,26 @@
 }
 
 .page {
+  position: relative;
   padding: 30px;
   border-right: 2px dashed #ccc;
+
+  /* Lined paper effect */
+  background: repeating-linear-gradient(
+    to bottom,
+    #faf7f2,
+    #faf7f2 29px,
+    #d1d1d1 30px
+  );
 }
 
 .right-page {
-  background: #fffdf7;
+  background: repeating-linear-gradient(
+    to bottom,
+    #fffdf7,
+    #fffdf7 29px,
+    #d1d1d1 30px
+  );
 }
 
 .page:last-child {
@@ -80,7 +93,7 @@
   min-height: 120px;
 }
 
-/* --- Custom File Inputs (Photos & Audio) --- */
+/* --- File Inputs --- */
 .custom-file-input {
   position: relative;
   width: 100%;
@@ -218,6 +231,7 @@
     gap: 10px;
   }
 }
+
 .location-input {
   padding: 12px 15px;
   border-radius: 10px;
@@ -233,4 +247,25 @@
   border-color: #7a5cff;
   box-shadow: 0 0 10px rgba(122, 92, 255, 0.2);
   outline: none;
+}
+.input-with-icon {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.input-with-icon input {
+  padding-right: 35px; /* space for the icon */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.calendar-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1.2em;
+  color: #888;
 }

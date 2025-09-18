@@ -396,11 +396,7 @@ def diary_create(request):
     if request.method == "POST":
         form = DailyDiaryForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
-            diary = form.save(commit=False)
-            diary.owner = request.user
-            # Assign single photo
-            diary.photo = request.FILES.get("photo")
-            diary.save()
+            diary = form.save()  # save() will handle owner and locations
             messages.success(request, "Diary entry created successfully!")
             return redirect("diary_list")
     else:

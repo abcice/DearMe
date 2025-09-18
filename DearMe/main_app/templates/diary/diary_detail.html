@@ -1,8 +1,36 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/diaries/diary_detail.css' %}" />
+<link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-<div class="diary-page">
-  <div class="page-header">
-    <h1>{{ diary.entry_date }}</h1>
+<div class="notebook">
+  <!-- Left Page -->
+  <div class="page left-page">
+    <div class="page-header">
+      <div class="date-location">
+        <p class="entry-date">{{ diary.entry_date }}</p>
+        {% if diary.location %}
+        <p class="entry-location">{{ diary.location }}</p>
+        {% endif %}
+      </div>
+      {% if diary.photo %}
+      <div class="diary-photo">
+        <img src="{{ diary.photo.url }}" alt="Diary Photo">
+      </div>
+      {% endif %}
+    </div>
+    
+    <div class="page-text">
+      <p>{{ diary.text|linebreaks }}</p>
+      {% if diary.audio %}
+        <audio controls src="{{ diary.audio.url }}"></audio>
+      {% endif %}
+    </div>
+    
     <div class="actions">
       <a href="{% url 'diary_edit' diary.pk %}" class="btn edit-btn">✏️ Edit</a>
       <form method="post" action="{% url 'diary_delete' diary.pk %}" style="display:inline;">
@@ -12,26 +40,23 @@
     </div>
   </div>
 
-  <div class="page-content">
-    <p>{{ diary.text|linebreaks }}</p>
-
-    {% if diary.photo %}
-      <img src="{{ diary.photo.url }}" alt="Diary photo" class="diary-media" />
-    {% endif %}
-    {% if diary.audio %}
-      <audio controls src="{{ diary.audio.url }}"></audio>
-    {% endif %}
-
-    {% if diary.memories.all %}
-      <h3>✨ Linked Memories:</h3>
-      <ul>
-        {% for memory in diary.memories.all %}
-          <li>
-            <a href="{% url 'memory_detail' memory.pk %}">{{ memory.title }}</a>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+  <!-- Right Page -->
+  <div class="page right-page">
+    <h2 class="memories-title">✨ Linked Memories</h2>
+    <div class="memories-list">
+      {% for memory in diary.memories.all %}
+      <div class="memory-item">
+        {% if memory.photo %}
+        <div class="memory-photo-frame">
+          <img src="{{ memory.photo.url }}" alt="{{ memory.title }}">
+        </div>
+        {% endif %}
+        <p class="memory-title">{{ memory.title }}</p>
+      </div>
+      {% empty %}
+      <p>No linked memories.</p>
+      {% endfor %}
+    </div>
   </div>
 </div>
 {% endblock %}

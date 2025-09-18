@@ -6,19 +6,64 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.css" rel="stylesheet" />
 
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 <!-- Custom CSS -->
 <link rel="stylesheet" href="{% static 'css/diaries/diary_form.css' %}" />
+
+<style>
+/* Calendar Icon */
+.input-with-icon {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.input-with-icon input {
+  padding-right: 35px; /* space for icon */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.calendar-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1.2em;
+  color: #888;
+}
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="notebook">
   <div class="page left-page">
-    <h1 class="title">{% if form.instance.pk %}Edit Diary Entry{% else %}New Diary Entry{% endif %}</h1>
+    <h1 class="title">
+      {% if form.instance.pk %}Edit Diary Entry{% else %}New Diary Entry{% endif %}
+    </h1>
 
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
-      <div class="form-group">{{ form.entry_date.label_tag }}{{ form.entry_date }}</div>
+
+      <!-- Hidden input for selected memories -->
+      <input type="hidden" name="selected_memories" id="selected_memories">
+
+      <!-- Entry Date -->
+      <div class="form-group">
+        {{ form.entry_date.label_tag }}
+        <div class="input-with-icon">
+          {{ form.entry_date }}
+          <span class="calendar-icon">📅</span>
+        </div>
+      </div>
+
+      <!-- Text -->
       <div class="form-group">{{ form.text.label_tag }}{{ form.text }}</div>
+
+      <!-- Locations -->
       <div class="form-group">
         {{ form.locations_input.label_tag }}
         {{ form.locations_input }}
@@ -45,11 +90,13 @@
         <div id="audio-preview" class="file-preview"></div>
       </div>
 
+      <!-- Take to grave -->
       <div class="checkbox-group">
         {{ form.take_to_grave }}
         <label for="{{ form.take_to_grave.id_for_label }}">Take to your grave</label>
       </div>
 
+      <!-- Buttons -->
       <div class="form-buttons">
         <button type="submit" class="btn-submit">Save Entry</button>
         <a href="{% url 'diary_list' %}" class="btn-cancel">Cancel</a>
@@ -68,12 +115,11 @@
 <dialog id="importModal" class="modal">
   <div class="modal-box w-11/12 max-w-5xl">
     <h3 class="font-bold text-lg">Select Memories</h3>
-
     <div class="memory-list mt-4 max-h-96 overflow-y-auto grid grid-cols-2 gap-4">
       {% for memory in form.fields.memories.queryset %}
       <div class="card bg-base-100 shadow-md memory-item" data-id="{{ memory.id }}">
         {% if memory.photo %}
-          <img src="{{ memory.photo.url }}" alt="{{ memory.title }}" class="rounded-t-md h-28 w-full object-cover" />
+        <img src="{{ memory.photo.url }}" alt="{{ memory.title }}" class="rounded-t-md h-28 w-full object-cover" />
         {% endif %}
         <div class="card-body">
           <h4 class="font-semibold">{{ memory.title }}</h4>
@@ -83,19 +129,43 @@
       </div>
       {% endfor %}
     </div>
-
     <div class="modal-action">
       <form method="dialog"><button class="btn">Close</button></form>
     </div>
   </div>
 </dialog>
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  // --- Modal ---
+  const textarea = document.querySelector('textarea[name="text"]');
+  if (textarea) {
+    const autoResize = () => {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    };
+    textarea.addEventListener('input', autoResize);
+    autoResize();
+  }
+
+  flatpickr("#id_entry_date", {
+    dateFormat: "Y-m-d",
+    altInput: true,
+    altFormat: "F j, Y",
+    allowInput: true
+  });
+
   const modal = document.getElementById("importModal");
   const openModalBtn = document.getElementById("openModalBtn");
   const stickersContainer = document.getElementById("memory-stickers");
+  const hiddenInput = document.getElementById("selected_memories");
+
+  function updateSelectedMemories() {
+    const ids = Array.from(stickersContainer.querySelectorAll(".sticker"))
+                     .map(sticker => sticker.dataset.id);
+    hiddenInput.value = ids.join(",");
+  }
 
   openModalBtn.addEventListener("click", () => modal.showModal());
 
@@ -108,15 +178,20 @@ document.addEventListener("DOMContentLoaded", () => {
       removeBtn.textContent = "×";
       removeBtn.classList.add("remove-memory-btn");
       removeBtn.type = "button";
-      removeBtn.addEventListener("click", () => card.remove());
+      removeBtn.addEventListener("click", () => {
+        card.remove();
+        updateSelectedMemories();
+      });
 
       card.appendChild(removeBtn);
       card.classList.add("sticker");
       stickersContainer.appendChild(card);
+
+      updateSelectedMemories();
     });
   });
 
-  // --- File Uploads and Previews ---
+  // File upload previews
   document.querySelectorAll(".file-button").forEach(button => {
     const target = button.dataset.target;
     const input = document.querySelector(`input[name="${target}"]`);
@@ -127,21 +202,45 @@ document.addEventListener("DOMContentLoaded", () => {
     input.addEventListener("change", function() {
       preview.innerHTML = "";
       Array.from(this.files).forEach(file => {
-        if (target === "photo") { // note the updated target name
+        const wrapper = document.createElement("div");
+        wrapper.style.display = "inline-block";
+        wrapper.style.position = "relative";
+        wrapper.style.margin = "5px";
+
+        if (target === "photo") {
           const img = document.createElement("img");
           img.src = URL.createObjectURL(file);
           img.style.maxWidth = "150px";
           img.style.maxHeight = "150px";
-          img.style.margin = "5px";
-          preview.appendChild(img);
+          wrapper.appendChild(img);
         } else if (target === "audio") {
           const audio = document.createElement("audio");
           audio.controls = true;
           audio.src = URL.createObjectURL(file);
           audio.style.display = "block";
-          audio.style.marginTop = "5px";
-          preview.appendChild(audio);
+          wrapper.appendChild(audio);
         }
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.textContent = "×";
+        removeBtn.style.position = "absolute";
+        removeBtn.style.top = "0";
+        removeBtn.style.right = "0";
+        removeBtn.style.background = "red";
+        removeBtn.style.color = "white";
+        removeBtn.style.border = "none";
+        removeBtn.style.borderRadius = "50%";
+        removeBtn.style.width = "20px";
+        removeBtn.style.height = "20px";
+        removeBtn.style.cursor = "pointer";
+        removeBtn.addEventListener("click", () => {
+          wrapper.remove();
+          input.value = "";
+        });
+
+        wrapper.appendChild(removeBtn);
+        preview.appendChild(wrapper);
       });
     });
   });

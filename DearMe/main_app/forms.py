@@ -2,9 +2,11 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
 from .models import Letter, CustomUser, Memory, DailyDiary, Tag, Location
-from django.utils.text import slugify
 
 
+# -----------------------
+# Letter Form
+# -----------------------
 class LetterForm(forms.ModelForm):
     class Meta:
         model = Letter
@@ -24,6 +26,9 @@ class LetterForm(forms.ModelForm):
         }
 
 
+# -----------------------
+# User Forms
+# -----------------------
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     birthday = forms.DateField(required=False, widget=forms.DateInput(attrs={"type": "date"}))
@@ -88,6 +93,9 @@ class ProfileForm(forms.ModelForm):
         return email
 
 
+# -----------------------
+# Memory Form
+# -----------------------
 class MemoryForm(forms.ModelForm):
     tags_input = forms.CharField(
         required=False,
@@ -149,14 +157,11 @@ class MemoryForm(forms.ModelForm):
         return memory
 
 
+# -----------------------
+# Daily Diary Form
+# -----------------------
 class DailyDiaryForm(forms.ModelForm):
-    # Single photo field
-    photo = forms.ImageField(
-        required=False,
-        label="Photo",
-    )
-
-    # Input for multiple locations as comma-separated values
+    photo = forms.ImageField(required=False, label="Photo")
     locations_input = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={"placeholder": "Enter locations...", "class": "location-input"}),
@@ -182,10 +187,14 @@ class DailyDiaryForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user", None)
+        self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        if user:
-            self.fields["memories"].queryset = Memory.objects.filter(owner=user)
+
+        # Filter memories to the current user
+        if self.user:
+            self.fields["memories"].queryset = Memory.objects.filter(owner=self.user)
+
+        # Pre-fill locations if editing
         if self.instance.pk and self.instance.locations.exists():
             self.fields['locations_input'].initial = ', '.join(loc.name for loc in self.instance.locations.all())
         if self.instance.pk and self.instance.photo:
@@ -193,15 +202,28 @@ class DailyDiaryForm(forms.ModelForm):
 
     def save(self, commit=True):
         diary = super().save(commit=False)
-        if commit:
-            diary.save()
+
+        if getattr(diary, "owner_id", None) is None and self.user:
+            diary.owner = self.user
+
+        diary.save()  # Save first to get an ID
 
         # Handle locations
         loc_str = self.cleaned_data.get("locations_input", "")
         loc_names = [l.strip() for l in loc_str.split(",") if l.strip()]
-        diary.locations.clear()
+        diary.locations.set([])  # clear first
         for loc_name in loc_names:
-            loc_obj, _ = Location.objects.get_or_create(name__iexact=loc_name, defaults={"name": loc_name})
+            loc_obj, _ = Location.objects.get_or_create(
+                name__iexact=loc_name, defaults={"name": loc_name}
+            )
             diary.locations.add(loc_obj)
+
+        # Handle attached memories
+        memory_ids = self.data.get("selected_memories", "")
+        if memory_ids:
+            ids_list = [int(mid) for mid in memory_ids.split(",") if mid.isdigit()]
+            diary.memories.set(Memory.objects.filter(id__in=ids_list, owner=self.user))
+        else:
+            diary.memories.clear()
 
         return diary

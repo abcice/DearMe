@@ -1,13 +1,121 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/letters/letter_form.css' %}" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+{% endblock %}
+
 {% block content %}
-  <h1>{% if form.instance.pk %}Edit Letter{% else %}New Letter{% endif %}</h1>
+<div class="letter-form-container">
+  <h1 class="letter-form-title">
+    {% if form.instance.pk %}Edit Letter{% else %}New Letter{% endif %}
+  </h1>
 
-  <form method="post" enctype="multipart/form-data">
+  <form method="post" enctype="multipart/form-data" class="letter-form">
     {% csrf_token %}
-    {{ form.as_p }}
 
-    <button type="submit">Save</button>
-    <a href="{% url 'letter_list' %}">Cancel</a>
+    <!-- Subject -->
+    <div class="form-group">
+      {{ form.subject.label_tag }}
+      {{ form.subject }}
+    </div>
+
+    <!-- Body with Toolbar -->
+    <div class="form-group">
+      <label for="id_body">Body</label>
+      <div class="text-toolbar">
+        <select id="font-size-selector">
+          <option value="14px">Small</option>
+          <option value="16px" selected>Medium</option>
+          <option value="18px">Large</option>
+          <option value="20px">Extra Large</option>
+        </select>
+        <button type="button" id="bold-btn"><b>B</b></button>
+        <button type="button" id="italic-btn"><i>I</i></button>
+      </div>
+      {{ form.body }}
+    </div>
+
+    <!-- Delivery Date -->
+    <div class="form-group">
+      {{ form.delivery_date.label_tag }}
+      {{ form.delivery_date }}
+    </div>
+
+    <!-- Attachment -->
+    <div class="form-group">
+      <label for="{{ form.attachment.id_for_label }}">Attachment</label>
+      <div class="custom-file-input">
+        {{ form.attachment }}
+        <span class="file-button">Choose File</span>
+      </div>
+      <div id="attachment-preview" class="file-preview"></div>
+    </div>
+
+    <!-- Receivers -->
+    <div class="form-group">
+      {{ form.receivers.label_tag }}
+      {{ form.receivers }}
+    </div>
+
+    <!-- External Emails -->
+    <div class="form-group">
+      {{ form.external_emails.label_tag }}
+      {{ form.external_emails }}
+    </div>
+
+    <!-- Grace Period -->
+    <div class="form-group">
+      {{ form.grace_period_hours.label_tag }}
+      {{ form.grace_period_hours }}
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-buttons">
+      <button type="submit" class="btn-submit">Save Letter</button>
+      <a href="{% url 'letter_list' %}" class="btn-cancel">Cancel</a>
+    </div>
   </form>
-  
+</div>
+
+<script>
+$(function(){
+  // FONT SIZE
+  $('#font-size-selector').on('change', function(){
+    $('textarea[name="body"]').css('font-size', $(this).val());
+  });
+
+  // BOLD & ITALIC
+  $('#bold-btn').on('click', function(){
+    const textarea = $('textarea[name="body"]');
+    textarea.val('**' + textarea.val() + '**');
+  });
+  $('#italic-btn').on('click', function(){
+    const textarea = $('textarea[name="body"]');
+    textarea.val('*' + textarea.val() + '*');
+  });
+
+  // ATTACHMENT PREVIEW
+  const attachmentInput = $('input[name="attachment"]');
+  const preview = $('#attachment-preview');
+
+  attachmentInput.on('change', function(){
+    preview.empty();
+    const file = this.files[0];
+    if(!file) return;
+
+    const ext = file.name.split('.').pop().toLowerCase();
+    if(['jpg','jpeg','png','gif'].includes(ext)){
+      const img = $('<img>').attr('src', URL.createObjectURL(file));
+      preview.append(img);
+    } else if(['mp3','wav','ogg'].includes(ext)){
+      const audio = $('<audio controls>').attr('src', URL.createObjectURL(file));
+      preview.append(audio);
+    } else {
+      preview.text('File selected: ' + file.name);
+    }
+  });
+});
+</script>
 {% endblock %}
