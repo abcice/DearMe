@@ -1,0 +1,81 @@
+/* --- About Page Styles (Friendly & Airy) --- */
+
+.about-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 35px 40px;
+  background: #fdfcffcc; /* very soft white */
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.8;
+  color: #444;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.about-container h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.6em;
+  font-weight: 600;
+  color: #6b3fff;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.about-container p {
+  font-size: 1.05em;
+  margin-bottom: 18px;
+  color: #555;
+  padding-left: 10px;
+  border-left: 3px solid #a88fff;
+}
+
+.about-container p em {
+  color: #a88fff;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.about-container strong {
+  color: #7a5cff;
+}
+
+.signature {
+  text-align: right;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.15em;
+  margin-top: 35px;
+  color: #6b3fff;
+}
+
+/* --- Add subtle spacing between paragraphs --- */
+.about-container p + p {
+  margin-top: 15px;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 768px) {
+  .about-container {
+    padding: 25px 20px;
+    margin: 30px 10px;
+  }
+
+  .about-container h1 {
+    font-size: 2em;
+  }
+
+  .about-container p {
+    font-size: 1em;
+  }
+}
+
+@media (min-width: 1440px) {
+  .about-container {
+    padding: 50px 60px;
+  }
+}

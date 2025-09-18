@@ -119,3 +119,21 @@ section p a:hover {
     padding: 50px 70px;
   }
 }
+
+/* Home Page Titles */
+.home-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #5f3bcc;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.home-subtitle {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.15rem;
+  color: #555;
+  text-align: center;
+  margin-bottom: 30px;
+}

@@ -18,12 +18,47 @@ class LetterForm(forms.ModelForm):
             "receivers",
             "external_emails",
             "grace_period_hours",
+            "memories",
+            "diary_entries",
         ]
         widgets = {
             "delivery_date": forms.DateTimeInput(
                 attrs={"type": "datetime-local", "class": "form-control"}
             ),
         }
+
+    def save(self, commit=True):
+        # Save basic letter
+        letter = super().save(commit=False)
+
+        # Ensure sender is set before saving
+        if not letter.sender_id and hasattr(self, 'user'):
+            letter.sender = self.user
+
+        if commit:
+            letter.save()
+            self.save_m2m()  # save normal M2M fields
+
+            # Attach memories
+            memory_ids = self.data.get("selected_memories", "")
+            if memory_ids:
+                ids_list = [int(mid) for mid in memory_ids.split(",") if mid.isdigit()]
+                letter.memories.set(Memory.objects.filter(id__in=ids_list, owner=letter.sender))
+            else:
+                letter.memories.clear()
+
+            # Attach diaries
+            diary_ids = self.data.get("selected_diaries", "")
+            if diary_ids:
+                ids_list = [int(did) for did in diary_ids.split(",") if did.isdigit()]
+                letter.diary_entries.set(DailyDiary.objects.filter(id__in=ids_list, owner=letter.sender))
+            else:
+                letter.diary_entries.clear()
+
+                
+
+        return letter
+
 
 
 # -----------------------

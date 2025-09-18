@@ -151,19 +151,20 @@ def letter_detail(request, pk):
 def letter_create(request):
     if request.method == "POST":
         form = LetterForm(request.POST, request.FILES)
+        form.user = request.user  # <<< add this line
         if form.is_valid():
             letter = form.save(commit=False)
-            letter.sender = request.user
+            letter.sender = request.user  # ensure sender is set
             letter.status = "scheduled"
             letter.save()
-            form.save_m2m()  
-            
-
+            form.save_m2m()
             messages.success(request, "Letter scheduled successfully!")
             return redirect("letter_list")
     else:
         form = LetterForm()
+        form.user = request.user  # <<< add this line
     return render(request, "letters/letter_form.html", {"form": form})
+
 
 
 @login_required
@@ -175,6 +176,7 @@ def letter_edit(request, pk):
 
     if request.method == "POST":
         form = LetterForm(request.POST, request.FILES, instance=letter)
+        form.user = request.user
         if form.is_valid():
             letter = form.save(commit=False)
             letter.status = "scheduled"

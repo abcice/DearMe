@@ -4,17 +4,19 @@
 <link rel="stylesheet" href="{% static 'css/home.css' %}"/>
 {% endblock %} 
 {% block content %}
-<h1>Hi</h1>
 
-{% if not user.is_authenticated %}
-  <section>
+<section>
+  {% if not user.is_authenticated %}
+    <h1 class="home-title">Welcome to DearMe</h1>
+    <p class="home-subtitle">Your personal diary to communicate with your future self</p>
+
     <form action="{% url 'home' %}" method="post" class="login">
-      <h1>Login</h1>
       {% csrf_token %} 
       {{ form.as_p }}
       <input type="hidden" name="next" value="{{ next }}" />
       <button type="submit" class="btn submit">Login</button>
     </form>
+
     <p>
       Forgot your password? 
       <a href="{% url 'forgot_password' %}">Reset it here</a>.
@@ -22,7 +24,10 @@
     <p>
       Don’t have an account? <a href="{% url 'signup' %}">Sign Up</a>
     </p>
-  </section>
-{% endif %}
+  {% else %}
+    <h1 class="home-title">Welcome back, {{ user.first_name|default:user.username }}!</h1>
+    <p class="home-subtitle">Continue exploring your future diary.</p>
+  {% endif %}
+</section>
 
 {% endblock %}

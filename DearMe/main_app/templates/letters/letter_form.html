@@ -2,16 +2,7 @@
 {% load static %}
 
 {% block head %}
-<!-- Tailwind & DaisyUI -->
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.css" rel="stylesheet" />
-
-<!-- jQuery & Select2 -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<link rel="stylesheet" href="{% static 'css/letters/letter_form.css' %}" />
+<link rel="stylesheet" href='{% static "css/letters/letter_form.css" %}'>
 {% endblock %}
 
 {% block content %}
@@ -23,286 +14,23 @@
   <form method="post" enctype="multipart/form-data" class="letter-form">
     {% csrf_token %}
 
-    <!-- Subject -->
-    <div class="form-group">
-      {{ form.subject.label_tag }}
-      {{ form.subject }}
-    </div>
-
-    <!-- Receivers -->
-    <div class="form-group">
-      {{ form.receivers.label_tag }}
-      {{ form.receivers }}
-    </div>
-
-    <!-- External Emails -->
-    <div class="form-group">
-      <label for="external-emails-input">External Emails</label>
-      <div id="email-chip-container" class="email-chip-container">
-        <input type="text" id="external-emails-input" placeholder="Type an email and press Enter or comma" />
+    {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}
+          <small>{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <p style="color: red;">{{ error }}</p>
+        {% endfor %}
       </div>
-      <input type="hidden" name="external_emails" id="external-emails-hidden" />
-    </div>
-
-    <!-- Body with Toolbar -->
-    <div class="form-group">
-      <label for="id_body">Body</label>
-      <div class="text-toolbar">
-        <select id="font-size-selector">
-          <option value="14px">Small</option>
-          <option value="16px" selected>Medium</option>
-          <option value="18px">Large</option>
-          <option value="20px">Extra Large</option>
-        </select>
-        <button type="button" id="bold-btn" class="btn-toolbar">B</button>
-        <button type="button" id="italic-btn" class="btn-toolbar">I</button>
-      </div>
-      {{ form.body }}
-    </div>
-
-    <!-- Delivery Date -->
-    <div class="form-group">
-      {{ form.delivery_date.label_tag }}
-      {{ form.delivery_date }}
-    </div>
-
-    <!-- Attachment -->
-    <div class="form-group">
-      <label for="{{ form.attachment.id_for_label }}">Attachment</label>
-      <div class="custom-file-input">
-        {{ form.attachment }}
-        <span class="file-button">Choose File</span>
-      </div>
-      <div id="attachment-preview" class="file-preview"></div>
-      <button type="button" id="remove-attachment" class="btn-cancel" style="display:none;">Remove Attachment</button>
-    </div>
-
-    <!-- Memories -->
-    <div class="form-group">
-      <label>Attach Memories</label>
-      <button type="button" class="btn-submit" id="openMemoriesModal">📌 Import Memories</button>
-      <div id="memories-preview" class="stickers"></div>
-      <input type="hidden" name="selected_memories" id="selected-memories-hidden" />
-    </div>
-
-    <!-- Diaries -->
-    <div class="form-group">
-      <label>Attach Diary Entries</label>
-      <button type="button" class="btn-submit" id="openDiariesModal">📌 Import Diaries</button>
-      <div id="diaries-preview" class="stickers"></div>
-      <input type="hidden" name="selected_diaries" id="selected-diaries-hidden" />
-    </div>
+    {% endfor %}
 
     <div class="form-buttons">
-      <button type="submit" class="btn-submit">Save Letter</button>
+      <button type="submit" class="btn-submit">Save</button>
       <a href="{% url 'letter_list' %}" class="btn-cancel">Cancel</a>
     </div>
   </form>
 </div>
-
-<!-- Memories Modal -->
-<dialog id="memoriesModal" class="modal">
-  <div class="modal-box w-11/12 max-w-5xl">
-    <h3 class="font-bold text-lg text-center">Select Memories</h3>
-    <div class="memory-list mt-4 max-h-96 overflow-y-auto grid grid-cols-2 md:grid-cols-3 gap-4">
-      {% for memory in user.memories.all %}
-      <div class="card bg-base-100 shadow-md memory-item" data-id="{{ memory.id }}">
-        {% if memory.photo %}
-        <img src="{{ memory.photo.url }}" alt="{{ memory.title }}" class="rounded-t-md h-28 w-full object-cover" />
-        {% endif %}
-        <div class="card-body">
-          <h4 class="font-semibold">{{ memory.title }}</h4>
-          <p class="text-sm">{{ memory.description|truncatewords:10 }}</p>
-          <button type="button" class="btn btn-xs btn-accent attach-memory">Attach</button>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    <div class="modal-action">
-      <form method="dialog"><button class="btn">Close</button></form>
-    </div>
-  </div>
-</dialog>
-
-<!-- Diaries Modal -->
-<dialog id="diariesModal" class="modal">
-  <div class="modal-box w-11/12 max-w-5xl">
-    <h3 class="font-bold text-lg text-center">Select Diaries</h3>
-    <div class="diary-list mt-4 max-h-96 overflow-y-auto grid grid-cols-2 md:grid-cols-3 gap-4">
-      {% for diary in user.diary_entries.all %}
-      <div class="card bg-base-100 shadow-md diary-item" data-id="{{ diary.id }}">
-        <div class="card-body">
-          <h4 class="font-semibold">Diary {{ diary.entry_date }}</h4>
-          <button type="button" class="btn btn-xs btn-accent attach-diary">Attach</button>
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-    <div class="modal-action">
-      <form method="dialog"><button class="btn">Close</button></form>
-    </div>
-  </div>
-</dialog>
-
-<style>
-/* Same modal look/feel as diary form */
-.modal::backdrop {
-  background: rgba(0,0,0,0.5);
-}
-.stickers {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-.sticker {
-  position: relative;
-  background: #fff;
-  padding: 10px;
-  border: 2px solid #eee;
-  border-radius: 10px;
-  box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
-  transform: rotate(-2deg);
-  max-width: 150px;
-}
-.remove-memory-btn, .remove-sticker {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  background: #ff6b6b;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  font-size: 14px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>
-
-<script>
-$(function(){
-
-  // --- Select2 for receivers ---
-  $('select[name="receivers"]').select2({
-    placeholder: "Select receivers",
-    width: '100%',
-    closeOnSelect: false
-  });
-
-  // --- Textarea formatting ---
-  $('#font-size-selector').on('change', function(){
-    $('textarea[name="body"]').css('font-size', $(this).val());
-  });
-  $('#bold-btn').on('click', function(){
-    const textarea = $('textarea[name="body"]');
-    textarea.val('**' + textarea.val() + '**');
-  });
-  $('#italic-btn').on('click', function(){
-    const textarea = $('textarea[name="body"]');
-    textarea.val('*' + textarea.val() + '*');
-  });
-
-  // --- Attachment preview ---
-  const attachmentInput = $('input[name="attachment"]');
-  const preview = $('#attachment-preview');
-  const removeBtn = $('#remove-attachment');
-
-  function updateAttachmentPreview() {
-    preview.empty();
-    const file = attachmentInput[0].files[0];
-    if(!file){ removeBtn.hide(); return; }
-    const ext = file.name.split('.').pop().toLowerCase();
-    if(['jpg','jpeg','png','gif'].includes(ext)){
-      preview.append($('<img>').attr('src', URL.createObjectURL(file)));
-    } else if(['mp3','wav','ogg'].includes(ext)){
-      preview.append($('<audio controls>').attr('src', URL.createObjectURL(file)));
-    } else {
-      preview.text('File selected: ' + file.name);
-    }
-    removeBtn.show();
-  }
-
-  attachmentInput.on('change', updateAttachmentPreview);
-  removeBtn.on('click', function(){
-    attachmentInput.val('');
-    updateAttachmentPreview();
-  });
-
-  // --- External emails chips ---
-  const emails = [];
-  function addEmail(val){
-    val = val.trim();
-    if(val && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) && !emails.includes(val)){
-      emails.push(val);
-      $('#email-chip-container').append('<span class="email-chip">'+val+'<span class="remove-chip">×</span></span>');
-      $('#external-emails-hidden').val(emails.join(','));
-    }
-  }
-
-  $('#external-emails-input').on('input', function(){
-    const val = $(this).val();
-    if(val.includes(',') || val.includes(' ')){
-      val.split(/[\s,]+/).forEach(v => addEmail(v));
-      $(this).val('');
-    }
-  });
-
-  $('#external-emails-input').on('keydown', function(e){
-    if(e.key === 'Enter'){
-      e.preventDefault();
-      addEmail($(this).val());
-      $(this).val('');
-    }
-  });
-
-  $('#email-chip-container').on('click', '.remove-chip', function(){
-    const val = $(this).parent().text().slice(0,-1);
-    emails.splice(emails.indexOf(val), 1);
-    $(this).parent().remove();
-    $('#external-emails-hidden').val(emails.join(','));
-  });
-
-  // --- Stickers for memories/diaries ---
-  function addSticker(container, id, text, input){
-    if(container.find(`.sticker[data-id='${id}']`).length) return;
-    const card = $('<div>').addClass('sticker').attr('data-id', id).text(text);
-    const removeBtn = $('<button>').text('×').addClass('remove-sticker');
-    removeBtn.on('click', function(){
-      card.remove();
-      input.val(container.find('.sticker').map((i, el)=>$(el).data('id')).get().join(','));
-    });
-    card.append(removeBtn);
-    container.append(card);
-    input.val(container.find('.sticker').map((i, el)=>$(el).data('id')).get().join(','));
-  }
-
-  $('.attach-memory').on('click', function(){
-    const parent = $(this).closest('.memory-item');
-    addSticker($('#memories-preview'), parent.data('id'), parent.find('h4').text(), $('#selected-memories-hidden'));
-  });
-
-  $('.attach-diary').on('click', function(){
-    const parent = $(this).closest('.diary-item');
-    addSticker($('#diaries-preview'), parent.data('id'), parent.find('h4').text(), $('#selected-diaries-hidden'));
-  });
-
-  // --- Modals setup ---
-  function setupModal(openBtnId, modalId){
-    const modal = document.querySelector(modalId);
-    const openBtn = document.querySelector(openBtnId);
-
-    openBtn.addEventListener('click', () => modal.showModal());
-    modal.querySelectorAll('form[method="dialog"] button, .btn.close-modal').forEach(btn => {
-      btn.addEventListener('click', () => modal.close());
-    });
-  }
-
-  setupModal('#openMemoriesModal', '#memoriesModal');
-  setupModal('#openDiariesModal', '#diariesModal');
-
-});
-</script>
 {% endblock %}

@@ -1,57 +1,63 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load crispy_forms_tags %}
+
 {% block head %}
 <link rel="stylesheet" href="{% static 'css/profile.css' %}">
 {% endblock %}
 
 {% block content %}
-<h1>Edit Profile</h1>
+<div class="profile-form-container">
+    <h1 class="profile-form-title">Edit Profile</h1>
 
-<div class="profile-container">
-  <div class="profile-picture">
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      {% if user_obj.profile_picture %}
-        <label for="id_profile_picture">
-          <img src="{{ user_obj.profile_picture.url }}" alt="Profile Picture" class="profile-pic"/>
-          <p>Click to change</p>
-        </label>
-      {% else %}
-        <label for="id_profile_picture">
-          <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="profile-pic"/>
-          <p>Click to upload</p>
-        </label>
-      {% endif %}
-      {{ form.profile_picture }}
-      <div class="profile-details">
-        <p><strong>Username:</strong> {{ user_obj.username }}</p>
-        <p><strong>Email:</strong> {{ user_obj.email }}</p>
-        <p><strong>Birthday:</strong> {{ user_obj.birthday }}</p>
-        {% if age %}
-        <p><strong>Age:</strong> {{ age }}</p>
-        {% endif %}
-        <p><strong>Date Joined:</strong> {{ user_obj.date_joined|date:"Y-m-d" }}</p>
-      </div>
+    <form method="post" enctype="multipart/form-data" class="profile-form">
+        {% csrf_token %}
 
-      <h3>Edit Profile Details</h3>
-        <table>
+        <!-- Profile Picture -->
+        <div class="profile-picture">
+            {% if user_obj.profile_picture %}
+                <label for="id_profile_picture">
+                    <img src="{{ user_obj.profile_picture.url }}" alt="Profile Picture" class="profile-pic"/>
+                    <p>Click to change</p>
+                </label>
+            {% else %}
+                <label for="id_profile_picture">
+                    <img src="{% static 'images/default-profile.png' %}" alt="Profile Picture" class="profile-pic"/>
+                    <p>Click to upload</p>
+                </label>
+            {% endif %}
+            {{ form.profile_picture }}
+        </div>
+
+        <!-- Profile Fields -->
+        <div class="form-fields">
             {{ form.username|as_crispy_field }}
             {{ form.email|as_crispy_field }}
             {{ form.first_name|as_crispy_field }}
             {{ form.last_name|as_crispy_field }}
-            {{ form.hide_name|as_crispy_field }}
+
+            <!-- Hide Name Checkbox (cleaned) -->
+            <div class="checkbox-group">
+                {{ form.hide_name }}
+                <label for="{{ form.hide_name.id_for_label }}">Hide my name publicly</label>
+            </div>
+
             {{ form.birthday|as_crispy_field }}
-        </table>
+        </div>
 
-      <button type="submit" class="btn submit">Save Changes</button>
+        <!-- Save Button -->
+        <div class="form-buttons">
+            <button type="submit" class="btn-submit">Save Changes</button>
+        </div>
     </form>
 
-    <hr>
-    <form method="post" action="{% url 'delete_profile' %}" onsubmit="return confirm('Are you sure? This will permanently delete your account and all data.')">
-      {% csrf_token %}
-      <button type="submit" class="btn delete-btn">Delete Account</button>
+    <!-- Delete Account -->
+    <form method="post" action="{% url 'delete_profile' %}" class="profile-form delete-form" 
+          onsubmit="return confirm('Are you sure? This will permanently delete your account and all data.')">
+        {% csrf_token %}
+        <div class="form-buttons">
+            <button type="submit" class="btn-cancel">Delete Account</button>
+        </div>
     </form>
-  </div>
 </div>
 {% endblock %}

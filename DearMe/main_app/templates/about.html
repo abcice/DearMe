@@ -1,13 +1,36 @@
 {% extends 'base.html' %} 
 {% load static %} 
+
 {% block head %}
-<link
-  rel="stylesheet"
-  href="{% static 'css/about.css' %}"
-/>
+<link rel="stylesheet" href="{% static 'css/about.css' %}" />
 {% endblock %} 
+
 {% block content %}
-<h1>About<h1>
+<div class="about-container">
+    <h1>About DearMe</h1>
 
+    <p>
+        Time moves forward, and we cannot go back. But memories and messages can travel to the future. 
+        <strong>DearMe</strong> is a bridge between today and tomorrow, letting you send letters and share moments with your future self or loved ones.
+    </p>
 
+    <p>
+        A note of encouragement, a heartfelt message, or a memory to revisit — DearMe keeps your emotions alive, 
+        reaching across time to touch hearts, including your own in the years to come.
+    </p>
+
+    <p>
+        Use the <em>Sad Button</em> for comfort, write daily diary entries, or create memories to open later. 
+        Each message is a whisper of love, hope, and connection, waiting for the right moment.
+    </p>
+
+    <p>
+        Even across the distance of years, you are never truly alone. Your feelings, thoughts, and love endure, 
+        reaching forward to bring comfort, joy, and reflection.
+    </p>
+
+    <p class="signature">
+        —  DearMe @ 2025
+    </p>
+</div>
 {% endblock %}
