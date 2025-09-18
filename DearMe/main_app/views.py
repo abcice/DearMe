@@ -391,7 +391,6 @@ def diary_detail(request, pk):
     diary = get_object_or_404(DailyDiary, pk=pk, owner=request.user)
     return render(request, "diary/diary_detail.html", {"diary": diary})
 
-
 @login_required
 def diary_create(request):
     if request.method == "POST":
@@ -399,8 +398,9 @@ def diary_create(request):
         if form.is_valid():
             diary = form.save(commit=False)
             diary.owner = request.user
+            # Assign single photo
+            diary.photo = request.FILES.get("photo")
             diary.save()
-            form.save_m2m()
             messages.success(request, "Diary entry created successfully!")
             return redirect("diary_list")
     else:
@@ -408,19 +408,23 @@ def diary_create(request):
     return render(request, "diary/diary_form.html", {"form": form})
 
 
-
 @login_required
 def diary_edit(request, pk):
     diary = get_object_or_404(DailyDiary, pk=pk, owner=request.user)
     if request.method == "POST":
-        form = DailyDiaryForm(request.POST, request.FILES, instance=diary)
+        form = DailyDiaryForm(request.POST, request.FILES, instance=diary, user=request.user)
         if form.is_valid():
-            form.save()
+            diary = form.save(commit=False)
+            # Update photo if a new one is uploaded
+            if request.FILES.get("photo"):
+                diary.photo = request.FILES.get("photo")
+            diary.save()
             messages.success(request, "Diary entry updated successfully!")
             return redirect("diary_detail", pk=pk)
     else:
-        form = DailyDiaryForm(instance=diary)
+        form = DailyDiaryForm(instance=diary, user=request.user)
     return render(request, "diary/diary_form.html", {"form": form})
+
 
 
 @login_required

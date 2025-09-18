@@ -1,0 +1,104 @@
+/* --- Container --- */
+.diary-container {
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Fredoka', sans-serif;
+  background: #f4f0fa;
+  min-height: 80vh;
+}
+
+/* --- Title --- */
+.diary-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #5f3bcc;
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+/* --- New Diary Button --- */
+.btn-new-diary {
+  display: inline-block;
+  background: linear-gradient(135deg, #a88fff, #7a5cff);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  padding: 12px 25px;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+.btn-new-diary:hover {
+  background: linear-gradient(135deg, #7a5cff, #5c3dbf);
+  transform: translateY(-2px);
+}
+
+/* --- Gallery Layout (3 per row like Instagram grid) --- */
+.diary-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* --- Diary Card --- */
+.diary-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: linear-gradient(135deg, #fff, #f0eaff);
+  padding: 15px;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(95, 59, 204, 0.1);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+.diary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(95, 59, 204, 0.15);
+}
+
+/* --- Date --- */
+.diary-date {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+/* --- Text Preview --- */
+.diary-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* --- No Diaries --- */
+.no-diaries {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.1rem;
+  color: #777;
+  margin-top: 30px;
+  text-align: center;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .diary-gallery { grid-template-columns: repeat(2, 1fr); }
+  .diary-title { font-size: 2rem; }
+}
+
+@media (max-width: 480px) {
+  .diary-gallery { grid-template-columns: 1fr; gap: 15px; }
+  .btn-new-diary { width: 100%; text-align: center; }
+}

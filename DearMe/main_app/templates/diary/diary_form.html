@@ -1,108 +1,150 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block head %}
+<!-- Tailwind & DaisyUI -->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.css" rel="stylesheet" />
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{% static 'css/diaries/diary_form.css' %}" />
+{% endblock %}
+
 {% block content %}
-<div class="diary-form-container">
-  <h1>{% if form.instance.pk %}Edit Entry{% else %}New Entry{% endif %}</h1>
+<div class="notebook">
+  <div class="page left-page">
+    <h1 class="title">{% if form.instance.pk %}Edit Diary Entry{% else %}New Diary Entry{% endif %}</h1>
 
-  <form method="post" enctype="multipart/form-data" class="diary-form">
-    {% csrf_token %}
-
-    <div class="form-section">
-      {{ form.entry_date.label_tag }} {{ form.entry_date }}
-    </div>
-
-    <div class="form-section">
-      {{ form.text.label_tag }}
-      {{ form.text }}
-    </div>
-
-    <!-- Memories Gallery -->
-    <div class="form-section">
-      <h3>Select Memories to include</h3>
-      <div class="memory-gallery">
-        {% for memory in form.fields.memories.queryset %}
-          <label class="memory-card">
-            <input type="checkbox" name="memories" value="{{ memory.id }}"
-              {% if memory in form.initial.memories.all %}checked{% endif %}>
-            {% if memory.photo %}
-              <img src="{{ memory.photo.url }}" alt="{{ memory.title }}">
-            {% endif %}
-            <div class="memory-info">
-              <strong>{{ memory.title }}</strong>
-              <p>{{ memory.description|truncatewords:12 }}</p>
-            </div>
-          </label>
-        {% endfor %}
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">{{ form.entry_date.label_tag }}{{ form.entry_date }}</div>
+      <div class="form-group">{{ form.text.label_tag }}{{ form.text }}</div>
+      <div class="form-group">
+        {{ form.locations_input.label_tag }}
+        {{ form.locations_input }}
+        <small class="hint">You can type multiple locations separated by commas.</small>
       </div>
-    </div>
 
-    <!-- Preview area -->
-    <div class="form-section">
-      <h3>Selected Memories</h3>
-      <div id="memory-preview" class="preview-grid"></div>
-    </div>
+      <!-- Photo Upload -->
+      <div class="form-group">
+        <label for="{{ form.photo.id_for_label }}">Photos</label>
+        <div class="custom-file-input">
+          {{ form.photo }}
+          <button type="button" class="file-button" data-target="photo">Upload Photos</button>
+        </div>
+        <div id="photo-preview" class="file-preview"></div>
+      </div>
 
-    <!-- Additional Fields -->
-    <div class="form-section">
-      {{ form.audio.label_tag }} {{ form.audio }}
-    </div>
-    <div class="form-section">
-      {{ form.photos.label_tag }} {{ form.photos }}
-    </div>
-    <div class="form-section">
-      {{ form.favorite_music.label_tag }} {{ form.favorite_music }}
-    </div>
-    <div class="form-section">
-      {{ form.favorite_foods.label_tag }} {{ form.favorite_foods }}
-    </div>
-    <div class="form-section">
-      {{ form.favorite_shows.label_tag }} {{ form.favorite_shows }}
-    </div>
-    <div class="form-section">
-      {{ form.take_to_grave.label_tag }} {{ form.take_to_grave }}
-    </div>
-    <div class="form-section">
-      {{ form.locations.label_tag }} {{ form.locations }}
-    </div>
+      <!-- Audio Upload -->
+      <div class="form-group">
+        <label for="{{ form.audio.id_for_label }}">Audio</label>
+        <div class="custom-file-input">
+          {{ form.audio }}
+          <button type="button" class="file-button" data-target="audio">Upload Audio</button>
+        </div>
+        <div id="audio-preview" class="file-preview"></div>
+      </div>
 
-    <button type="submit" class="btn submit">Save Entry</button>
-  </form>
+      <div class="checkbox-group">
+        {{ form.take_to_grave }}
+        <label for="{{ form.take_to_grave.id_for_label }}">Take to your grave</label>
+      </div>
+
+      <div class="form-buttons">
+        <button type="submit" class="btn-submit">Save Entry</button>
+        <a href="{% url 'diary_list' %}" class="btn-cancel">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="page right-page">
+    <h2 class="subtitle">Attached Memories</h2>
+    <button class="btn btn-outline btn-primary mb-3" id="openModalBtn">📌 Import Memory</button>
+    <div id="memory-stickers" class="stickers"></div>
+  </div>
 </div>
 
-<!-- Include the external CSS -->
-<link rel="stylesheet" href="{% static 'css/diary_form.css' %}">
+<!-- Import Modal -->
+<dialog id="importModal" class="modal">
+  <div class="modal-box w-11/12 max-w-5xl">
+    <h3 class="font-bold text-lg">Select Memories</h3>
+
+    <div class="memory-list mt-4 max-h-96 overflow-y-auto grid grid-cols-2 gap-4">
+      {% for memory in form.fields.memories.queryset %}
+      <div class="card bg-base-100 shadow-md memory-item" data-id="{{ memory.id }}">
+        {% if memory.photo %}
+          <img src="{{ memory.photo.url }}" alt="{{ memory.title }}" class="rounded-t-md h-28 w-full object-cover" />
+        {% endif %}
+        <div class="card-body">
+          <h4 class="font-semibold">{{ memory.title }}</h4>
+          <p class="text-sm">{{ memory.description|truncatewords:10 }}</p>
+          <button type="button" class="btn btn-xs btn-accent attach-memory">Attach</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="modal-action">
+      <form method="dialog"><button class="btn">Close</button></form>
+    </div>
+  </div>
+</dialog>
 
 <script>
-  const checkboxes = document.querySelectorAll('.memory-card input[type="checkbox"]');
-  const preview = document.getElementById("memory-preview");
+document.addEventListener("DOMContentLoaded", () => {
+  // --- Modal ---
+  const modal = document.getElementById("importModal");
+  const openModalBtn = document.getElementById("openModalBtn");
+  const stickersContainer = document.getElementById("memory-stickers");
 
-  function updatePreview() {
-    preview.innerHTML = "";
-    checkboxes.forEach(cb => {
-      if (cb.checked) {
-        const card = cb.closest('.memory-card').cloneNode(true);
-        card.querySelector('input').remove();
-        card.classList.remove('memory-card');
-        card.classList.add('preview-card');
+  openModalBtn.addEventListener("click", () => modal.showModal());
 
-        // Add remove button
-        const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '×';
-        removeBtn.classList.add('remove-memory-btn');
-        removeBtn.addEventListener('click', () => {
-          cb.checked = false;
-          updatePreview();
-        });
-        card.appendChild(removeBtn);
+  document.querySelectorAll(".attach-memory").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".memory-item").cloneNode(true);
+      card.querySelector(".attach-memory").remove();
 
-        preview.appendChild(card);
-      }
+      const removeBtn = document.createElement("button");
+      removeBtn.textContent = "×";
+      removeBtn.classList.add("remove-memory-btn");
+      removeBtn.type = "button";
+      removeBtn.addEventListener("click", () => card.remove());
+
+      card.appendChild(removeBtn);
+      card.classList.add("sticker");
+      stickersContainer.appendChild(card);
     });
-  }
+  });
 
-  checkboxes.forEach(cb => cb.addEventListener("change", updatePreview));
-  updatePreview();
+  // --- File Uploads and Previews ---
+  document.querySelectorAll(".file-button").forEach(button => {
+    const target = button.dataset.target;
+    const input = document.querySelector(`input[name="${target}"]`);
+    const preview = document.getElementById(`${target}-preview`);
+
+    button.addEventListener("click", () => input.click());
+
+    input.addEventListener("change", function() {
+      preview.innerHTML = "";
+      Array.from(this.files).forEach(file => {
+        if (target === "photo") { // note the updated target name
+          const img = document.createElement("img");
+          img.src = URL.createObjectURL(file);
+          img.style.maxWidth = "150px";
+          img.style.maxHeight = "150px";
+          img.style.margin = "5px";
+          preview.appendChild(img);
+        } else if (target === "audio") {
+          const audio = document.createElement("audio");
+          audio.controls = true;
+          audio.src = URL.createObjectURL(file);
+          audio.style.display = "block";
+          audio.style.marginTop = "5px";
+          preview.appendChild(audio);
+        }
+      });
+    });
+  });
+});
 </script>
-
 {% endblock %}

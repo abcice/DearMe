@@ -1,19 +1,27 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'css/diaries/diary_list.css' %}" />
+{% endblock %}
+
 {% block content %}
 <div class="diary-container">
-  <h1>📖 My Diary</h1>
-  <a href="{% url 'diary_create' %}" class="btn new-entry-btn">+ New Entry</a>
-  <div class="diary-list">
-    {% for diary in diaries %}
-      <div class="diary-card">
-        <a href="{% url 'diary_detail' diary.pk %}">
-          <h3>{{ diary.entry_date }}</h3>
-          <p>{{ diary.text|truncatechars:120 }}</p>
+  <h1 class="diary-title">📖 My Diary</h1>
+
+  <a href="{% url 'diary_create' %}" class="btn-new-diary">+ New Entry</a>
+
+  {% if diaries %}
+    <div class="diary-gallery">
+      {% for diary in diaries %}
+        <a href="{% url 'diary_detail' diary.pk %}" class="diary-card">
+          <h3 class="diary-date">{{ diary.entry_date }}</h3>
+          <p class="diary-text">{{ diary.text|truncatechars:120 }}</p>
         </a>
-      </div>
-    {% empty %}
-      <p>No diary entries yet. Start writing today!</p>
-    {% endfor %}
-  </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="no-diaries">No diary entries yet. Start writing today!</p>
+  {% endif %}
 </div>
 {% endblock %}

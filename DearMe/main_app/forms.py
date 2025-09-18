@@ -1,9 +1,9 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate
-from .models import Letter, CustomUser, Memory, DailyDiary, DiaryPhoto, Tag, Location
-from django.forms import FileInput
+from .models import Letter, CustomUser, Memory, DailyDiary, Tag, Location
 from django.utils.text import slugify
+
 
 class LetterForm(forms.ModelForm):
     class Meta:
@@ -19,29 +19,25 @@ class LetterForm(forms.ModelForm):
         ]
         widgets = {
             "delivery_date": forms.DateTimeInput(
-                attrs={
-                    "type": "datetime-local",  
-                    "class": "form-control",
-                }
+                attrs={"type": "datetime-local", "class": "form-control"}
             ),
         }
 
+
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
-    birthday = forms.DateField(
-        required=False,
-        widget=forms.DateInput(attrs={"type": "date"})
-    )
+    birthday = forms.DateField(required=False, widget=forms.DateInput(attrs={"type": "date"}))
 
     class Meta(UserCreationForm.Meta):
         model = CustomUser
         fields = ("username", "email", "birthday", "password1", "password2")
-    
+
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if CustomUser.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("This email is already in use. Please choose another.")
         return email
+
 
 class EmailOrUsernameAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label="Username or Email")
@@ -60,17 +56,12 @@ class EmailOrUsernameAuthenticationForm(AuthenticationForm):
             else:
                 username = username_or_email
 
-            self.user_cache = authenticate(
-                self.request, username=username, password=password
-            )
+            self.user_cache = authenticate(self.request, username=username, password=password)
             if self.user_cache is None:
                 raise forms.ValidationError("Invalid login credentials.")
 
-            # check if email verified
             if not self.user_cache.is_email_verified:
-                raise forms.ValidationError(
-                    "Your email is not verified. Please check your inbox."
-                )
+                raise forms.ValidationError("Your email is not verified. Please check your inbox.")
 
         return self.cleaned_data
 
@@ -97,24 +88,15 @@ class ProfileForm(forms.ModelForm):
         return email
 
 
-from django import forms
-from .models import Memory, Tag, Location
-
 class MemoryForm(forms.ModelForm):
     tags_input = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={
-            "placeholder": "Add tags... #tag1 #tag2",
-            "class": "tags-input"
-        }),
+        widget=forms.TextInput(attrs={"placeholder": "Add tags... #tag1 #tag2", "class": "tags-input"}),
         help_text="Type tags and press enter. Suggestions will appear while typing."
     )
     location_input = forms.CharField(
         required=False,
-        widget=forms.TextInput(attrs={
-            "placeholder": "Add a location",
-            "class": "location-input"
-        }),
+        widget=forms.TextInput(attrs={"placeholder": "Add a location", "class": "location-input"}),
         help_text="Start typing a location for suggestions."
     )
 
@@ -132,10 +114,7 @@ class MemoryForm(forms.ModelForm):
             "memory_date",
         ]
         widgets = {
-            "memory_date": forms.DateInput(attrs={
-                "type": "date",
-                "class": "calendar-input"
-            }),
+            "memory_date": forms.DateInput(attrs={"type": "date", "class": "calendar-input"}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -146,7 +125,6 @@ class MemoryForm(forms.ModelForm):
                 self.fields['location_input'].initial = self.instance.location.name
 
     def clean_tags_input(self):
-        """Convert user input into Tag objects."""
         tags_str = self.cleaned_data.get("tags_input", "")
         tags_list = [t.strip().lstrip('#') for t in tags_str.split() if t.strip()]
         tags_objs = []
@@ -156,7 +134,6 @@ class MemoryForm(forms.ModelForm):
         return tags_objs
 
     def clean_location_input(self):
-        """Get or create a Location object (case-insensitive)."""
         loc_str = self.cleaned_data.get("location_input", "").strip()
         if not loc_str:
             return None
@@ -173,18 +150,18 @@ class MemoryForm(forms.ModelForm):
 
 
 class DailyDiaryForm(forms.ModelForm):
-    memories = forms.ModelMultipleChoiceField(
-        queryset=Memory.objects.none(),
+    # Single photo field
+    photo = forms.ImageField(
         required=False,
-        widget=forms.CheckboxSelectMultiple,
-        help_text="Select memories to include in this diary entry"
+        label="Photo",
     )
 
-    photos = forms.FileField(
+    # Input for multiple locations as comma-separated values
+    locations_input = forms.CharField(
         required=False,
-        help_text="Upload one or more photos"
+        widget=forms.TextInput(attrs={"placeholder": "Enter locations...", "class": "location-input"}),
+        help_text="You can type multiple locations separated by commas."
     )
-
 
     class Meta:
         model = DailyDiary
@@ -192,13 +169,12 @@ class DailyDiaryForm(forms.ModelForm):
             "entry_date",
             "text",
             "memories",
-            "photos",
             "audio",
+            "photo",
             "favorite_music",
             "favorite_foods",
             "favorite_shows",
             "take_to_grave",
-            "locations",
         ]
         widgets = {
             "entry_date": forms.DateInput(attrs={"type": "date"}),
@@ -210,13 +186,22 @@ class DailyDiaryForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if user:
             self.fields["memories"].queryset = Memory.objects.filter(owner=user)
+        if self.instance.pk and self.instance.locations.exists():
+            self.fields['locations_input'].initial = ', '.join(loc.name for loc in self.instance.locations.all())
+        if self.instance.pk and self.instance.photo:
+            self.fields['photo'].initial = self.instance.photo
 
     def save(self, commit=True):
-        diary = super().save(commit=commit)
-        
-        # Handle multiple photos
-        if self.files.getlist("photos"):
-            for photo_file in self.files.getlist("photos"):
-                DiaryPhoto.objects.create(diary=diary, image=photo_file)
-        
+        diary = super().save(commit=False)
+        if commit:
+            diary.save()
+
+        # Handle locations
+        loc_str = self.cleaned_data.get("locations_input", "")
+        loc_names = [l.strip() for l in loc_str.split(",") if l.strip()]
+        diary.locations.clear()
+        for loc_name in loc_names:
+            loc_obj, _ = Location.objects.get_or_create(name__iexact=loc_name, defaults={"name": loc_name})
+            diary.locations.add(loc_obj)
+
         return diary

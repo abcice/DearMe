@@ -133,6 +133,7 @@ class DailyDiary(models.Model):
     text = EncryptedTextField(blank=True)
     memories = models.ManyToManyField(Memory, blank=True, related_name="included_in_diaries")
     audio = models.FileField(upload_to=diary_file_path, null=True, blank=True)
+    photo = models.ImageField(upload_to=diary_file_path, null=True, blank=True)  # single photo
     favorite_music = EncryptedTextField(blank=True, help_text="Optional: list your favorite music or upload an MP3 file")
     favorite_foods = EncryptedTextField(blank=True, help_text="Optional: list your favorite foods")
     favorite_shows = EncryptedTextField(blank=True, help_text="Optional: list your favorite anime/TV shows or add links")
@@ -140,7 +141,6 @@ class DailyDiary(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     locations = models.ManyToManyField(Location, blank=True, related_name="diary_entries")
-    
 
     class Meta:
         unique_together = ("owner", "entry_date")
@@ -148,13 +148,7 @@ class DailyDiary(models.Model):
 
     def __str__(self):
         return f"Diary entry for {self.entry_date} by {self.owner.username}"
-    
-class DiaryPhoto(models.Model):
-    diary = models.ForeignKey("DailyDiary", on_delete=models.CASCADE, related_name="photos")
-    image = models.ImageField(upload_to=diary_file_path)
 
-    def __str__(self):
-        return f"Photo for {self.diary.entry_date}"
 
 
 
